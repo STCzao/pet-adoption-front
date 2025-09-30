@@ -30,7 +30,9 @@ const ForgotPasswordScreen = () => {
       if (!resp.ok) {
         setResult(data.msg || "Error al enviar correo");
       } else {
-        setResult("Revisa tu correo para restablecer la contraseña");
+        setResult(
+          "Se envió un correo con instrucciones para restablecer tu contraseña"
+        );
       }
     } catch (error) {
       console.error(error);
@@ -81,7 +83,7 @@ const ForgotPasswordScreen = () => {
 
           <p className="text-white text-sm mt-3 mb-6">
             <a className="text-white underline" href="/login">
-              Volver
+              Volver al login
             </a>
           </p>
         </motion.form>
