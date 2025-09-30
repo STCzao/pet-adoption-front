@@ -14,8 +14,8 @@ const ResetPasswordScreen = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let valid = true;
     const newErrors = {};
+    let valid = true;
 
     if (!password.trim()) {
       newErrors.password = "La contraseña es obligatoria";
@@ -40,7 +40,6 @@ const ResetPasswordScreen = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: password.trim() }),
       });
-
       const data = await resp.json();
 
       if (!resp.ok) {
@@ -74,7 +73,6 @@ const ResetPasswordScreen = () => {
             Restablecer contraseña
           </h1>
 
-          {/* Nueva contraseña */}
           <div className="flex items-center w-full mt-8 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
             <input
               type="password"
@@ -88,7 +86,6 @@ const ResetPasswordScreen = () => {
             <p className="text-red-400 text-xs mt-1">{errors.password}</p>
           )}
 
-          {/* Confirmar contraseña */}
           <div className="flex items-center mt-4 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
             <input
               type="password"
