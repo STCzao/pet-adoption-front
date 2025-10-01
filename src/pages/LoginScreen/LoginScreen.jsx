@@ -52,11 +52,8 @@ const LoginScreen = ({ iniciarSesion, guardarUsuario }) => {
       const data = await resp.json();
 
       if (!resp.ok) {
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          setResult(data.msg || "Error al iniciar sesión");
-        }
+        if (data.errors) setErrors(data.errors);
+        else setResult(data.msg || "Error al iniciar sesión");
       } else {
         localStorage.setItem("token", data.token);
         guardarUsuario(data.usuario);
@@ -74,29 +71,22 @@ const LoginScreen = ({ iniciarSesion, guardarUsuario }) => {
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 0.3,
-          duration: 0.8,
-          ease: "easeInOut",
-        }}
+        transition={{ delay: 0.3, duration: 0.8, ease: "easeInOut" }}
         className="flex flex-col items-center text-white/90 w-full"
       >
         <motion.form
           onSubmit={handleSubmit}
-          className="max-w-96 w-full text-center border border-white/70 rounded-2xl px-8 py-6  shadow-lg"
+          className="max-w-96 w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.5,
-            duration: 0.8,
-            ease: "easeInOut",
-          }}
+          transition={{ delay: 0.5, duration: 0.8, ease: "easeInOut" }}
         >
           <div className="flex flex-col items-center justify-center font-playfair">
             <h1 className="text-white text-3xl mt-2 font-medium">
               ¡Bienvenido!
             </h1>
           </div>
+
           <div className="flex items-center w-full mt-8 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
             <input
               type="email"
