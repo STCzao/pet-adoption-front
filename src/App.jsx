@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginScreen from "../src/pages/LoginScreen/LoginScreen";
 import RegisterScreen from "../src/pages/RegisterScreen/RegisterScreen";
 import ForgotPasswordScreen from "../src/pages/ForgotPasswordScreen/ForgotPasswordScreen";
@@ -7,12 +7,56 @@ import ResetPasswordScreen from "../src/pages/ResetPasswordScreen/ResetPasswordS
 import ProtectedRoutes from "../src/routes/ProtectedRoutes/ProtectedRoutes";
 import HomeScreen from "../src/pages/HomeScreen/HomeScreen";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const guardarUsuario = (datos) => setUser(datos);
+  // 🔹 Verificar token al iniciar la app
+  useEffect(() => {
+    const verificarToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const resp = await fetch(`${API_URL}/auth/me`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-token": token,
+          },
+        });
+
+        if (!resp.ok) {
+          cerrarSesion();
+        } else {
+          const data = await resp.json();
+          setUser(data.usuario);
+          localStorage.setItem("token", data.token); // refrescar token
+          setLogin(true);
+        }
+      } catch (error) {
+        console.error("Error al verificar token:", error);
+        cerrarSesion();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verificarToken();
+  }, []);
+
+  const guardarUsuario = (datos) => {
+    setUser(datos);
+  };
+
   const iniciarSesion = () => setLogin(true);
+
   const cerrarSesion = () => {
     setLogin(false);
     setUser(null);
@@ -26,10 +70,14 @@ function App() {
         <Route
           path="/login"
           element={
-            <LoginScreen
-              iniciarSesion={iniciarSesion}
-              guardarUsuario={guardarUsuario}
-            />
+            login ? (
+              <Navigate to="/" />
+            ) : (
+              <LoginScreen
+                iniciarSesion={iniciarSesion}
+                guardarUsuario={guardarUsuario}
+              />
+            )
           }
         />
 
@@ -44,14 +92,16 @@ function App() {
         />
 
         {/* Rutas protegidas */}
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoutes login={login}>
-              <HomeScreen cerrarSesion={cerrarSesion} user={user} />
-            </ProtectedRoutes>
-          }
-        />
+        {!loading && (
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoutes login={login}>
+                <HomeScreen cerrarSesion={cerrarSesion} user={user} />
+              </ProtectedRoutes>
+            }
+          />
+        )}
       </Routes>
     </BrowserRouter>
   );
