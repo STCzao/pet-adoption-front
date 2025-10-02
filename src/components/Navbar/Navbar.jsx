@@ -1,7 +1,19 @@
 import React from "react";
 import Logo from "../../assets/Logo Perdidos y adopciones.png";
+import {
+  SidebarProvider,
+  useSidebar,
+  SidebarOpciones,
+} from "../SidebarOpciones/SidebarOpciones";
 
-const Navbar = () => {
+import { CrearPublicacion } from "../CrearPublicacion/CrearPublicacion";
+import { EditarPerfil } from "../EditarPerfil/EditarPerfil";
+import { VerPublicaciones } from "../VerPublicaciones/VerPublicaciones";
+import { EditarPublicacion } from "../EditarPublicacion/EditarPublicacion";
+
+const NavbarContent = ({ cerrarSesion }) => {
+  const { open, setOpen } = useSidebar();
+
   const navLinks = [
     { name: "Inicio", path: "/" },
     {
@@ -32,108 +44,108 @@ const Navbar = () => {
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full flex items-center justify-between px-10 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
-        isScrolled
-          ? "bg-[#FF7857] shadow-md text-white backdrop-blur-lg py-3 md:py-4"
-          : "bg-transparent text-white py-4 md:py-6"
-      }`}
-    >
-      {/* Logo */}
-      <a href="/" className="flex items-center gap-2">
-        <img
-          src={Logo}
-          alt="logo"
-          className="h-16 transition-all duration-300"
-        />
-      </a>
+    <>
+      <nav
+        className={`fixed top-0 left-0 w-full flex items-center justify-between px-10 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
+          isScrolled
+            ? "bg-[#FF7857] shadow-md text-white backdrop-blur-lg py-3 md:py-4"
+            : "bg-transparent text-white py-4 md:py-6"
+        }`}
+      >
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => setOpen(!open)}
+        >
+          <img
+            src={Logo}
+            alt="logo"
+            className="h-16 transition-all duration-300"
+          />
+        </div>
 
-      {/* Links + Buscador */}
-      <div className="hidden md:flex items-center gap-8 lg:gap-12">
-        {/* Links */}
-        <div className="flex items-center gap-6 lg:gap-10">
-          {navLinks.map((link, i) =>
-            link.dropdown ? (
-              <div key={i} className="relative group">
-                <button
-                  className={`flex items-center gap-1 text-white font-medium transition-colors ${
+        {/* Links y buscador desktop */}
+        <div className="hidden md:flex items-center gap-8 lg:gap-12">
+          <div className="flex items-center gap-6 lg:gap-10">
+            {navLinks.map((link, i) =>
+              link.dropdown ? (
+                <div key={i} className="relative group">
+                  <button
+                    className={`flex items-center gap-1 text-white font-medium transition-colors ${
+                      isScrolled ? "hover:text-black" : "hover:text-[#FF7857]"
+                    }`}
+                  >
+                    {link.name}
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                  <div
+                    className={`absolute top-8 left-0 shadow-lg rounded-md min-w-[200px] py-2 flex flex-col opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ${
+                      isScrolled
+                        ? "bg-transparent border border-black"
+                        : "bg-transparent border border-[#FF7857]"
+                    }`}
+                  >
+                    {link.dropdown.map((item, j) => (
+                      <a
+                        key={j}
+                        href={item.path}
+                        className="px-4 py-2 text-white hover:bg-white/20 transition-colors"
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <a
+                  key={i}
+                  href={link.path}
+                  className={`font-medium text-white transition-colors ${
                     isScrolled ? "hover:text-black" : "hover:text-[#FF7857]"
                   }`}
                 >
                   {link.name}
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-                {/* Dropdown */}
-                <div
-                  className={`absolute top-8 left-0 shadow-lg rounded-md min-w-[200px] py-2 flex flex-col opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ${
-                    isScrolled
-                      ? "bg-transparent border border-black"
-                      : "bg-transparent border border-[#FF7857]"
-                  }`}
-                >
-                  {link.dropdown.map((item, j) => (
-                    <a
-                      key={j}
-                      href={item.path}
-                      className="px-4 py-2 text-white hover:bg-white/20 transition-colors"
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <a
-                key={i}
-                href={link.path}
-                className={`font-medium text-white transition-colors ${
-                  isScrolled ? "hover:text-black" : "hover:text-[#FF7857]"
-                }`}
-              >
-                {link.name}
-              </a>
-            )
-          )}
+                </a>
+              )
+            )}
+          </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              className={`px-4 py-2 rounded-md outline-none bg-transparent placeholder-white text-white transition-all ${
+                isScrolled ? "border border-white" : "border border-[#FF7857]"
+              }`}
+            />
+          </div>
         </div>
 
-        {/* Buscador pegado a los links */}
-        <div>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className={`px-4 py-2 rounded-md outline-none bg-transparent placeholder-white text-white transition-all ${
-              isScrolled ? "border border-white" : "border border-[#FF7857]"
-            }`}
-          />
+        {/* Mobile menu button */}
+        <div className="flex md:hidden items-center gap-3">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke={isScrolled ? "#000" : "#FFF"}
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
         </div>
-      </div>
-
-      {/* Mobile menu button */}
-      <div className="flex md:hidden items-center gap-3">
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke={isScrolled ? "#000" : "#FFF"}
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
+      </nav>
 
       {/* Mobile menu */}
       <div
-        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-black transition-transform duration-500 ${
+        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-transform duration-500 ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -156,10 +168,10 @@ const Navbar = () => {
           link.dropdown ? (
             <div
               key={i}
-              className="flex flex-col items-center gap-2 border border-[#FF7857] p-3 rounded-lg gap-5"
+              className="flex flex-col border border-[#FF7857] p-2 rounded items-center gap-2"
             >
               <button
-                className="font-medium text-black"
+                className="font-medium"
                 onClick={() => toggleDropdown(link.name)}
               >
                 {link.name}
@@ -170,7 +182,7 @@ const Navbar = () => {
                   <a
                     key={j}
                     href={item.path}
-                    className="font-medium text-[#FF7857]"
+                    className="hover:text-[#FF7857] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
@@ -181,7 +193,7 @@ const Navbar = () => {
             <a
               key={i}
               href={link.path}
-              className="font-medium text-black "
+              className="hover:text-[#FF7857] transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               {link.name}
@@ -190,16 +202,29 @@ const Navbar = () => {
         )}
 
         {/* Buscador mobile */}
-        <div className="font-medium flex items-center rounded-full overflow-hidden px-3 py-1.5 mt-4 w-3/4 border border-[#FF7857]">
+        <div className="flex items-center rounded-full overflow-hidden px-3 py-1.5 mt-4 w-3/4 border border-[#FF7857]">
           <input
             type="text"
             placeholder="Buscar..."
-            className="bg-transparent outline-none w-full placeholder-black text-[#FF7857]"
+            className="bg-white outline-none w-full placeholder-gray-800 text-gray-800"
           />
         </div>
       </div>
-    </nav>
+
+      {/* Sidebar y modales */}
+      <SidebarOpciones cerrarSesion={cerrarSesion} />
+      <CrearPublicacion.Component />
+      <EditarPerfil.Component />
+      <VerPublicaciones.Component />
+      <EditarPublicacion.Component />
+    </>
   );
 };
+
+const Navbar = ({ cerrarSesion }) => (
+  <SidebarProvider>
+    <NavbarContent cerrarSesion={cerrarSesion} />
+  </SidebarProvider>
+);
 
 export default Navbar;
