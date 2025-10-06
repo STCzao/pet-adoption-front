@@ -119,7 +119,7 @@ const LoginScreen = ({ iniciarSesion, guardarUsuario }) => {
 
           <button
             type="submit"
-            className="mt-6 w-full h-11 rounded-full text-white bg-black border border-white/70 hover:bg-[#FF7857] transition-opacity"
+            className="mt-6 w-full h-11 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-opacity"
           >
             Ingresar
           </button>

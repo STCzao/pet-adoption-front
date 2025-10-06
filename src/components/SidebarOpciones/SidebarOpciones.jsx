@@ -45,28 +45,28 @@ export const SidebarOpciones = ({ cerrarSesion }) => {
 
       <button
         onClick={() => CrearPublicacion.openModal()}
-        className="font-medium w-45 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity flex items-center justify-center px-4"
+        className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity"
       >
         Crear Publicación
       </button>
 
       <button
         onClick={() => EditarPerfil.openModal()}
-        className="font-medium w-45 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity flex items-center justify-center px-4"
+        className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity"
       >
         Editar Perfil
       </button>
 
       <button
         onClick={() => VerPublicaciones.openModal()}
-        className="font-medium w-45 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity flex items-center justify-center px-4"
+        className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity"
       >
         Ver Mis Publicaciones
       </button>
 
       <button
         onClick={() => EditarPublicacion.openModal()}
-        className="font-medium w-45 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity flex items-center justify-center px-4"
+        className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity"
       >
         Editar Publicación
       </button>
@@ -74,14 +74,14 @@ export const SidebarOpciones = ({ cerrarSesion }) => {
       {/* Botón Cerrar Sidebar */}
       <button
         onClick={() => setOpen(false)}
-        className="font-medium mt-60 md:mt-100 lg:mt-80 w-45 h-11 rounded-full text-white bg-white/20 hover:bg-white/60 transition-opacity flex items-center justify-center px-4"
+        className="border border-white/20 font-medium mt-60 md:mt-100 lg:mt-80 w-50 h-11 rounded-full text-white bg-white/20 hover:bg-white/60 transition-opacity flex items-center justify-center px-4"
       >
         Cerrar
       </button>
 
       <button
         onClick={cerrarSesion}
-        className="font-medium w-45 h-11 rounded-full text-white bg-red-500 hover:bg-red-600 transition-opacity flex items-center justify-center px-4"
+        className="font-medium w-50 h-11 rounded-full text-white bg-red-500 hover:bg-red-600 transition-opacity flex items-center justify-center px-4"
       >
         Cerrar Sesión
       </button>
