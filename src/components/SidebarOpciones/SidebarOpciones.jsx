@@ -29,17 +29,32 @@ export const SidebarProvider = ({ children }) => {
     }
   }, [open]);
 
+  // Agregar listener para actualizaciones del perfil
+  React.useEffect(() => {
+    const handleUserProfileUpdate = (event) => {
+      const updatedUser = event.detail.user;
+      setUser(updatedUser);
+      setIsAdmin(updatedUser.rol === "ADMIN_ROLE");
+    };
+
+    window.addEventListener("userProfileUpdated", handleUserProfileUpdate);
+
+    return () => {
+      window.removeEventListener("userProfileUpdated", handleUserProfileUpdate);
+    };
+  }, []);
+
   const cargarUsuario = async () => {
     try {
-      const usuarioData = await usuariosService.getMiPerfil();
+      const response = await usuariosService.getMiPerfil();
 
-      if (usuarioData && usuarioData.ok && usuarioData.usuario) {
-        setUser(usuarioData.usuario);
-        setIsAdmin(usuarioData.usuario.rol === "ADMIN_ROLE");
+      if (response.ok && response.usuario) {
+        setUser(response.usuario);
+        setIsAdmin(response.usuario.rol === "ADMIN_ROLE");
       } else {
         console.warn(
           "Error al cargar usuario:",
-          usuarioData.msg || "Datos inválidos"
+          response.msg || "Datos inválidos"
         );
         setUser(null);
         setIsAdmin(false);
@@ -92,7 +107,7 @@ export const SidebarOpciones = ({ cerrarSesion }) => {
         </button>
 
         <button
-          onClick={() => EditarPerfil.openModal(user)}
+          onClick={() => EditarPerfil.openModal()}
           className="border border-white/20 font-medium w-full h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity"
         >
           Editar perfil
