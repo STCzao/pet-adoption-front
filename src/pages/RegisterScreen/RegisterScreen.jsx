@@ -31,7 +31,7 @@ export default function RegisterScreen() {
       newErrors.nombre = "El nombre debe tener al menos 3 caracteres";
       valid = false;
     } else if (form.nombre.trim().length > 15) {
-      newErrors.nombre = "El nombre no puede tener más de 15 caracteres";
+      newErrors.nombre = "El nombre no puede tener más de 40 caracteres";
       valid = false;
     } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(form.nombre.trim())) {
       newErrors.nombre = "El nombre solo puede contener letras y espacios";
@@ -54,6 +54,9 @@ export default function RegisterScreen() {
       valid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo.trim())) {
       newErrors.correo = "Debe ser un correo válido";
+      valid = false;
+    } else if (form.correo.trim().length > 35) {
+      newErrors.correo = "El correo no puede tener más de 35 caracteres";
       valid = false;
     }
 
@@ -141,7 +144,7 @@ export default function RegisterScreen() {
             <input
               type="text"
               name="nombre"
-              placeholder="Nombre"
+              placeholder="Nombre completo"
               className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
               value={form.nombre}
               onChange={handleChange}

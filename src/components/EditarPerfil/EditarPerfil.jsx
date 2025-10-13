@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { usuariosService } from "../../services/usuarios";
 import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
 
@@ -13,7 +13,6 @@ export const EditarPerfil = {
     const [open, setOpen] = useState(false);
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [editMode, setEditMode] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState("");
     const [errors, setErrors] = useState({});
@@ -22,11 +21,11 @@ export const EditarPerfil = {
       action: "",
     });
 
+    const [editingField, setEditingField] = useState(null);
+
     const [form, setForm] = useState({
       nombre: "",
-      correo: "",
       telefono: "",
-      direccion: "",
     });
 
     modalControl = { setOpen };
@@ -37,7 +36,6 @@ export const EditarPerfil = {
         cargarDatosUsuario();
       } else {
         document.body.style.overflow = "unset";
-        setEditMode(false);
       }
       return () => {
         document.body.style.overflow = "unset";
@@ -46,90 +44,234 @@ export const EditarPerfil = {
 
     const cargarDatosUsuario = useCallback(async () => {
       setLoading(true);
+      setResult("");
       try {
-        const usuario = await usuariosService.getMiPerfil();
-        if (usuario) {
-          setUserData(usuario);
+        const response = await usuariosService.getMiPerfil();
+
+        console.log("Respuesta de carga:", response);
+
+        if (response.ok && response.usuario) {
+          setUserData(response.usuario);
           setForm({
-            nombre: usuario.nombre || "",
-            correo: usuario.correo || "",
-            telefono: usuario.telefono || "",
-            direccion: usuario.direccion || "",
+            nombre: response.usuario.nombre || "",
+            telefono: response.usuario.telefono || "",
           });
+        } else {
+          const errorMsg = response.msg || "Error al cargar perfil";
+          setResult(errorMsg);
+
+          // Si es error de token, cerrar modal
+          if (errorMsg.includes("token") || errorMsg.includes("sesión")) {
+            setTimeout(() => {
+              setOpen(false);
+              resetForm();
+            }, 3000);
+          }
         }
       } catch (error) {
         console.error("Error al cargar perfil:", error);
+        setResult("Error de conexión al servidor");
       } finally {
         setLoading(false);
       }
     }, []);
 
     const resetForm = () => {
-      if (userData) setForm({ ...userData });
+      if (userData) {
+        setForm({
+          nombre: userData.nombre || "",
+          telefono: userData.telefono || "",
+        });
+      }
       setErrors({});
       setResult("");
+      setEditingField(null);
     };
 
     const handleChange = (e) => {
       const { name, value } = e.target;
       setForm((prev) => ({ ...prev, [name]: value }));
-      if (errors[name])
+
+      if (errors[name]) {
         setErrors((prev) => {
           const copy = { ...prev };
           delete copy[name];
           return copy;
         });
+      }
     };
 
-    const validarFormulario = () => {
-      let valid = true;
-      const newErrors = {};
+    const validarCampo = (campo, valor) => {
+      const valorTrimmed = valor.trim();
 
-      if (!form.nombre.trim()) {
-        newErrors.nombre = "El nombre es obligatorio";
-        valid = false;
-      } else if (form.nombre.length < 3) {
-        newErrors.nombre = "Debe tener al menos 3 caracteres";
-        valid = false;
+      switch (campo) {
+        case "nombre":
+          if (!valorTrimmed) return "El nombre es obligatorio";
+          if (valorTrimmed.length < 3)
+            return "Debe tener al menos 3 caracteres";
+          if (valorTrimmed.length > 40)
+            return "No puede tener más de 40 caracteres";
+          if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(valorTrimmed))
+            return "Solo puede contener letras y espacios";
+          break;
+        case "telefono":
+          if (!valorTrimmed) return "El teléfono es obligatorio";
+          if (!/^[0-9]{7,15}$/.test(valorTrimmed))
+            return "Debe contener 7-15 dígitos";
+          break;
+        default:
+          return "";
+      }
+      return "";
+    };
+
+    const startEditing = (fieldName) => {
+      setEditingField(fieldName);
+    };
+
+    const cancelEditing = (fieldName) => {
+      setEditingField(null);
+      if (userData) {
+        setForm((prev) => ({
+          ...prev,
+          [fieldName]: userData[fieldName] || "",
+        }));
+      }
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[fieldName];
+        return copy;
+      });
+    };
+
+    const saveField = async (fieldName) => {
+      const value = form[fieldName].trim();
+      const originalValue = userData[fieldName] || "";
+
+      if (value === originalValue) {
+        setEditingField(null);
+        return;
       }
 
-      if (!form.correo.trim()) {
-        newErrors.correo = "El correo es obligatorio";
-        valid = false;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo.trim())) {
-        newErrors.correo = "Correo inválido";
-        valid = false;
+      const error = validarCampo(fieldName, value);
+      if (error) {
+        setErrors((prev) => ({ ...prev, [fieldName]: error }));
+        return;
       }
 
-      if (!form.telefono.trim()) {
-        newErrors.telefono = "Teléfono obligatorio";
-        valid = false;
-      } else if (!/^[0-9]{7,15}$/.test(form.telefono.trim())) {
-        newErrors.telefono = "Debe contener 7-15 dígitos";
-        valid = false;
-      }
+      try {
+        setSubmitting(true);
+        setResult(
+          `Actualizando ${fieldName === "nombre" ? "nombre" : "teléfono"}...`
+        );
 
-      setErrors(newErrors);
-      return valid;
+        const updateData = { [fieldName]: value };
+
+        const response = await usuariosService.actualizarPerfil(updateData);
+
+        console.log("Respuesta de actualización:", response);
+
+        if (response.ok && response.usuario) {
+          setResult("✅ Campo actualizado exitosamente");
+          setUserData(response.usuario);
+          setEditingField(null);
+
+          // Disparar evento personalizado para actualizar el sidebar
+          window.dispatchEvent(
+            new CustomEvent("userProfileUpdated", {
+              detail: { user: response.usuario },
+            })
+          );
+
+          setTimeout(() => setResult(""), 3000);
+        } else {
+          const errorMsg = response.msg || "Error al actualizar";
+          setResult(errorMsg);
+
+          // Si es error de token, cerrar modal
+          if (errorMsg.includes("token") || errorMsg.includes("sesión")) {
+            setTimeout(() => {
+              setOpen(false);
+              resetForm();
+            }, 3000);
+          }
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setResult("Error de conexión");
+      } finally {
+        setSubmitting(false);
+      }
     };
 
     const handleSubmit = async (e) => {
       e?.preventDefault();
-      if (submitting || !validarFormulario()) return;
+
+      const nuevosErrores = {};
+      Object.keys(form).forEach((campo) => {
+        const valorTrimmed = form[campo].trim();
+        const originalValorTrimmed = (userData[campo] || "").trim();
+
+        if (valorTrimmed !== originalValorTrimmed) {
+          const error = validarCampo(campo, valorTrimmed);
+          if (error) nuevosErrores[campo] = error;
+        }
+      });
+
+      setErrors(nuevosErrores);
+      if (Object.keys(nuevosErrores).length > 0) return;
+
+      const modificados = Object.keys(form).filter(
+        (key) => form[key].trim() !== (userData[key] || "").trim()
+      );
+
+      if (modificados.length === 0) {
+        setResult("No hay cambios para guardar");
+        setTimeout(() => setResult(""), 2000);
+        return;
+      }
 
       try {
         setSubmitting(true);
         setResult("Actualizando perfil...");
-        const updated = await usuariosService.actualizarPerfil(form);
-        if (updated && updated._id) {
-          setResult("Perfil actualizado exitosamente");
-          setUserData(updated);
-          setEditMode(false);
-          setTimeout(() => setResult(""), 2000);
+
+        const datosActualizados = {};
+        modificados.forEach((campo) => {
+          datosActualizados[campo] = form[campo].trim();
+        });
+
+        const response = await usuariosService.actualizarPerfil(
+          datosActualizados
+        );
+
+        console.log("Respuesta de actualización completa:", response);
+
+        if (response.ok && response.usuario) {
+          setResult("✅ Perfil actualizado exitosamente");
+          setUserData(response.usuario);
+
+          // Disparar evento personalizado para actualizar el sidebar
+          window.dispatchEvent(
+            new CustomEvent("userProfileUpdated", {
+              detail: { user: response.usuario },
+            })
+          );
+
+          setTimeout(() => setResult(""), 3000);
         } else {
-          setResult(updated.msg || "Error al actualizar perfil");
+          const errorMsg = response.msg || "Error al actualizar perfil";
+          setResult(errorMsg);
+
+          // Si es error de token, cerrar modal
+          if (errorMsg.includes("token") || errorMsg.includes("sesión")) {
+            setTimeout(() => {
+              setOpen(false);
+              resetForm();
+            }, 3000);
+          }
         }
-      } catch {
+      } catch (error) {
+        console.error("Error en handleSubmit:", error);
         setResult("Error de conexión");
       } finally {
         setSubmitting(false);
@@ -153,123 +295,287 @@ export const EditarPerfil = {
       }
     };
 
-    const openConfirmModal = useCallback(
-      (action) => setConfirmModal({ isOpen: true, action }),
-      []
-    );
-    const closeConfirmModal = useCallback(
-      () => setConfirmModal({ isOpen: false, action: "" }),
-      []
-    );
-    const handleConfirm = useCallback(() => {
+    const openConfirmModal = (action) =>
+      setConfirmModal({ isOpen: true, action });
+    const closeConfirmModal = () =>
+      setConfirmModal({ isOpen: false, action: "" });
+    const handleConfirm = () => {
       if (confirmModal.action === "delete") handleEliminarCuenta();
-    }, [confirmModal]);
+    };
+
+    const handleKeyPress = (e, fieldName) => {
+      if (e.key === "Enter") {
+        saveField(fieldName);
+      } else if (e.key === "Escape") {
+        cancelEditing(fieldName);
+      }
+    };
 
     if (!open) return null;
 
     return (
-      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center w-full max-w-md"
-        >
-          <div className="w-full text-center border border-white/70 rounded-2xl px-6 py-6 shadow-lg bg-white/10 backdrop-blur-sm">
-            <h1 className="text-white text-2xl sm:text-3xl mt-2 font-medium">
-              Mi Perfil
-            </h1>
-            <p className="text-white/80 text-sm mt-1">
-              Gestiona tu información personal
-            </p>
-
-            {loading ? (
-              <div className="flex justify-center items-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF7857]" />
-              </div>
-            ) : (
-              <motion.form
-                onSubmit={handleSubmit}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-4 mt-6"
+      <AnimatePresence>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col items-center w-full max-w-md"
+          >
+            <div className="relative w-full text-center border border-white/70 rounded-2xl px-6 py-6 shadow-lg bg-white/10 backdrop-blur-sm">
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  resetForm();
+                }}
+                className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
+                disabled={submitting}
               >
-                {["nombre", "correo", "telefono", "direccion"].map((campo) => (
-                  <div key={campo}>
-                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-4 sm:pl-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-5 h-5"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+
+              <h1 className="text-white text-2xl sm:text-3xl mt-2 font-medium">
+                Mi Perfil
+              </h1>
+              <p className="text-white/80 text-sm mt-1">
+                Gestiona tu información personal
+              </p>
+
+              {loading ? (
+                <div className="flex justify-center items-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF7857]" />
+                </div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-4 mt-6"
+                >
+                  {/* Campo Nombre */}
+                  <div className="space-y-2">
+                    <label className="text-white text-sm text-left block pl-4">
+                      Nombre completo
+                    </label>
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-4 sm:pl-6 pr-2">
                       <input
-                        type={campo === "correo" ? "email" : "text"}
-                        name={campo}
-                        placeholder={`${
-                          campo.charAt(0).toUpperCase() + campo.slice(1)
-                        }`}
-                        value={form[campo] || ""}
+                        type="text"
+                        name="nombre"
+                        placeholder="Tu nombre completo"
+                        value={form.nombre || ""}
                         onChange={handleChange}
-                        disabled={submitting}
-                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full px-2"
+                        onFocus={() => startEditing("nombre")}
+                        onKeyDown={(e) => handleKeyPress(e, "nombre")}
+                        disabled={
+                          submitting ||
+                          (editingField && editingField !== "nombre")
+                        }
+                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full px-2 disabled:opacity-50"
+                        maxLength={40}
                       />
+
+                      {editingField === "nombre" && (
+                        <div className="flex gap-1 ml-2">
+                          <button
+                            type="button"
+                            onClick={() => saveField("nombre")}
+                            disabled={submitting}
+                            className="p-1 text-green-600 hover:text-green-800 disabled:opacity-50"
+                            title="Guardar"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => cancelEditing("nombre")}
+                            disabled={submitting}
+                            className="p-1 text-red-600 hover:text-red-800 disabled:opacity-50"
+                            title="Cancelar"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {errors[campo] && (
+                    {errors.nombre && (
                       <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors[campo]}
+                        {errors.nombre}
+                      </p>
+                    )}
+                    <p className="text-gray-400 text-xs text-left pl-4">
+                      {form.nombre.length}/40 caracteres
+                    </p>
+                  </div>
+
+                  {/* Campo Teléfono */}
+                  <div className="space-y-2">
+                    <label className="text-white text-sm text-left block pl-4">
+                      Teléfono
+                    </label>
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-4 sm:pl-6 pr-2">
+                      <input
+                        type="text"
+                        name="telefono"
+                        placeholder="Tu teléfono"
+                        value={form.telefono || ""}
+                        onChange={handleChange}
+                        onFocus={() => startEditing("telefono")}
+                        onKeyDown={(e) => handleKeyPress(e, "telefono")}
+                        disabled={
+                          submitting ||
+                          (editingField && editingField !== "telefono")
+                        }
+                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full px-2 disabled:opacity-50"
+                        maxLength={15}
+                      />
+
+                      {editingField === "telefono" && (
+                        <div className="flex gap-1 ml-2">
+                          <button
+                            type="button"
+                            onClick={() => saveField("telefono")}
+                            disabled={submitting}
+                            className="p-1 text-green-600 hover:text-green-800 disabled:opacity-50"
+                            title="Guardar"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => cancelEditing("telefono")}
+                            disabled={submitting}
+                            className="p-1 text-red-600 hover:text-red-800 disabled:opacity-50"
+                            title="Cancelar"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {errors.telefono && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.telefono}
                       </p>
                     )}
                   </div>
-                ))}
 
-                {result && (
-                  <p
-                    className={`text-center mt-4 ${
-                      result.includes("exitosamente")
-                        ? "text-green-400"
-                        : "text-red-400"
-                    }`}
-                  >
-                    {result}
-                  </p>
-                )}
+                  {result && (
+                    <p
+                      className={`text-center mt-4 text-sm ${
+                        result.includes("✅") || result.includes("exitosamente")
+                          ? "text-green-400"
+                          : result.includes("token") ||
+                            result.includes("sesión")
+                          ? "text-yellow-400"
+                          : "text-red-400"
+                      }`}
+                    >
+                      {result}
+                    </p>
+                  )}
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditMode(false);
-                      resetForm();
-                    }}
-                    disabled={submitting}
-                    className="flex-1 px-6 py-2 rounded-full text-white bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="flex-1 px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
-                  >
-                    {submitting ? "Guardando..." : "Guardar"}
-                  </button>
-                </div>
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        resetForm();
+                      }}
+                      disabled={submitting}
+                      className="flex-1 px-6 py-2 rounded-full text-white bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Cerrar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                      className="flex-1 px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
+                    >
+                      {submitting ? "Guardando..." : "Guardar Todo"}
+                    </button>
+                  </div>
 
-                {!editMode && (
                   <button
                     type="button"
                     onClick={() => openConfirmModal("delete")}
-                    className="mt-4 w-full px-6 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors"
+                    disabled={submitting}
+                    className="mt-4 w-full px-6 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
                   >
                     Eliminar Cuenta
                   </button>
-                )}
-              </motion.form>
-            )}
-          </div>
-        </motion.div>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
 
-        <ConfirmModal
-          confirmModal={confirmModal}
-          onClose={closeConfirmModal}
-          onConfirm={handleConfirm}
-          type="cuenta"
-        />
-      </div>
+          <ConfirmModal
+            confirmModal={confirmModal}
+            onClose={closeConfirmModal}
+            onConfirm={handleConfirm}
+            type="cuenta"
+          />
+        </div>
+      </AnimatePresence>
     );
   }),
 };
