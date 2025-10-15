@@ -1,33 +1,19 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Cache simple para evitar llamadas duplicadas
-const cache = {
-  publicaciones: null,
-  usuarios: null,
-  timestamp: null,
-};
-
-const CACHE_DURATION = 30000; // 30 segundos
+const cache = { publicaciones: null, usuarios: null, timestamp: null };
+const CACHE_DURATION = 30000;
 
 export const adminService = {
   getTodasPublicaciones: async () => {
     try {
-      // Verificar cache
-      if (
-        cache.publicaciones &&
-        cache.timestamp &&
-        Date.now() - cache.timestamp < CACHE_DURATION
-      ) {
-        return cache.publicaciones;
-      }
-
       const token = localStorage.getItem("token");
       const resp = await fetch(`${API_URL}/publicaciones/admin/todas`, {
-        headers: { "x-token": token },
+        headers: { "x-token": token || "" },
       });
 
       if (!resp.ok) {
-        const errorData = await resp.json();
+        let errorMsg = "Error al obtener publicaciones";
+        const errorData = await resp.json().catch(() => ({}));
         return {
           success: false,
           msg: errorData.msg || "Error al obtener publicaciones",
@@ -35,12 +21,7 @@ export const adminService = {
       }
 
       const data = await resp.json();
-
-      // Actualizar cache
-      cache.publicaciones = data;
-      cache.timestamp = Date.now();
-
-      return data;
+      return { success: true, publicaciones: data.publicaciones || [] };
     } catch (error) {
       return { success: false, msg: "Error de conexión al servidor" };
     }
@@ -57,21 +38,26 @@ export const adminService = {
       }
 
       const token = localStorage.getItem("token");
+      if (!token) {
+      }
+
       const resp = await fetch(`${API_URL}/usuarios`, {
-        headers: { "x-token": token },
+        headers: { "x-token": token || "" },
       });
 
       if (!resp.ok) {
-        const errorData = await resp.json();
-        return { msg: errorData.msg || "Error al obtener usuarios" };
+        let errorMsg = "Error al obtener usuarios";
+        try {
+          const errorData = await resp.json();
+          errorMsg = errorData.msg || errorMsg;
+        } catch (jsonErr) {}
+        return { msg: errorMsg };
       }
 
       const data = await resp.json();
 
-      // Normalizar formato: asegurar que siempre devuelva { usuarios: [...] }
       const usuarios =
         data.usuarios || data.data || (Array.isArray(data) ? data : []) || [];
-
       const result = { usuarios };
 
       cache.usuarios = result;
@@ -80,6 +66,29 @@ export const adminService = {
       return result;
     } catch (error) {
       return { msg: "Error de conexión al servidor" };
+    }
+  },
+
+  cambiarEstadoUsuario: async (id, estado) => {
+    try {
+      const token = localStorage.getItem("token");
+      const resp = await fetch(`${API_URL}/usuarios/${id}/estado`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-token": token || "",
+        },
+        body: JSON.stringify({ estado }),
+      });
+
+      const data = await resp.json();
+      if (!resp.ok) {
+        return { ok: false, msg: data.msg || "Error al actualizar el estado" };
+      }
+
+      return { ok: true, usuario: data.usuario };
+    } catch (error) {
+      return { ok: false, msg: "Error de conexión al servidor" };
     }
   },
 

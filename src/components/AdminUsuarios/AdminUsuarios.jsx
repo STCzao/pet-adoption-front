@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { adminService } from "../../services/admin";
-import { usuariosService } from "../../services/usuarios";
 import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
 
 let modalControl;
@@ -25,26 +24,18 @@ export const AdminUsuarios = {
     useEffect(() => {
       if (open) {
         document.body.style.overflow = "hidden";
-        document.documentElement.style.overflow = "hidden";
         cargarUsuarios();
       } else {
         document.body.style.overflow = "unset";
-        document.documentElement.style.overflow = "unset";
       }
 
-      return () => {
-        document.body.style.overflow = "unset";
-        document.documentElement.style.overflow = "unset";
-      };
+      return () => (document.body.style.overflow = "unset");
     }, [open]);
 
     const cargarUsuarios = useCallback(async () => {
       try {
         setLoading(true);
-        setError("");
         const result = await adminService.getTodosUsuarios();
-
-        console.log("Resultado getTodosUsuarios:", result);
 
         if (result.usuarios && Array.isArray(result.usuarios)) {
           setUsuarios(result.usuarios);
@@ -58,66 +49,38 @@ export const AdminUsuarios = {
       }
     }, []);
 
-    const handleEliminar = useCallback(async (usuario) => {
-      if (!usuario?._id && !usuario?.id && !usuario?.uid) {
-        setError("Usuario no válido para eliminar");
-        return false;
-      }
-
+    const handleCambiarEstado = useCallback(async (usuario) => {
       try {
         const id = usuario._id || usuario.id || usuario.uid;
-        const result = await usuariosService.borrarUsuario(id);
-        if (result.usuario) {
+        const nuevoEstado = !usuario.estado;
+
+        if (usuario.rol === "ADMIN_ROLE") {
+          setError("No se puede modificar el estado de un administrador");
+          return false;
+        }
+
+        const result = await adminService.cambiarEstadoUsuario(id, nuevoEstado);
+
+        if (result.ok) {
           setUsuarios((prev) =>
             prev.map((u) =>
-              (u._id || u.id || u.uid) === id ? { ...u, estado: false } : u
+              (u._id || u.id || u.uid) === id
+                ? { ...u, estado: nuevoEstado }
+                : u
             )
           );
           return true;
         } else {
-          setError(result.msg || "Error al eliminar usuario");
+          setError(result.msg || "Error al cambiar estado");
           return false;
         }
-      } catch {
-        setError("Error de conexión al eliminar");
-        return false;
-      }
-    }, []);
-
-    const handleCambiarRol = useCallback(async (usuario, nuevoRol) => {
-      if (!usuario?._id && !usuario?.id && !usuario?.uid) {
-        setError("Usuario no válido para cambiar rol");
-        return false;
-      }
-
-      try {
-        const id = usuario._id || usuario.id || usuario.uid;
-        const result = await usuariosService.actualizarUsuario(id, {
-          rol: nuevoRol,
-        });
-
-        if (result._id || result.id || result.uid) {
-          setUsuarios((prev) =>
-            prev.map((u) =>
-              (u._id || u.id || u.uid) === id ? { ...u, rol: nuevoRol } : u
-            )
-          );
-          return true;
-        } else {
-          setError(result.msg || "Error al cambiar rol");
-          return false;
-        }
-      } catch {
-        setError("Error de conexión al cambiar rol");
+      } catch (err) {
+        setError("Error de conexión al servidor");
         return false;
       }
     }, []);
 
     const openConfirmModal = useCallback((item, action) => {
-      if (!item) {
-        setError("Elemento no válido");
-        return;
-      }
       setConfirmModal({ isOpen: true, item, action });
     }, []);
 
@@ -126,26 +89,25 @@ export const AdminUsuarios = {
     }, []);
 
     const handleConfirm = useCallback(async () => {
-      if (!confirmModal.item) {
-        setError("Elemento no válido para la acción");
+      const { item, action } = confirmModal;
+
+      if (!item) {
         closeConfirmModal();
         return;
       }
 
-      try {
-        if (confirmModal.action === "delete") {
-          await handleEliminar(confirmModal.item);
-        } else if (confirmModal.action === "changeRole") {
-          const nuevoRol =
-            confirmModal.item.rol === "ADMIN_ROLE" ? "USER_ROLE" : "ADMIN_ROLE";
-          await handleCambiarRol(confirmModal.item, nuevoRol);
-        }
-      } catch {
-        setError("Error inesperado al procesar la acción");
-      } finally {
-        closeConfirmModal();
+      switch (action) {
+        case "toggleState":
+          await handleCambiarEstado(item);
+          break;
+
+        default:
+          setError("Acción desconocida");
+          break;
       }
-    }, [confirmModal, handleEliminar, handleCambiarRol, closeConfirmModal]);
+
+      closeConfirmModal();
+    }, [confirmModal, handleCambiarEstado, closeConfirmModal]);
 
     const handleClose = useCallback(() => {
       setOpen(false);
@@ -156,31 +118,30 @@ export const AdminUsuarios = {
     if (!open) return null;
 
     return (
-      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
+      <div className="font-medium fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center w-full max-w-6xl max-h-[90vh] overflow-y-auto"
         >
           <div className="max-w-6xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm">
-            <div className="flex flex-col items-center justify-center">
-              <h1 className="text-white text-3xl mt-2 font-medium">
-                Administrar Usuarios
-              </h1>
-              <p className="text-white/80 text-sm mt-1">
-                Gestiona todos los usuarios del sitio
-              </p>
-            </div>
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
+            >
+              ✕
+            </button>
+
+            <h1 className="text-white text-3xl mt-2 font-medium">
+              Administrar usuarios
+            </h1>
+            <p className="text-white/80 text-sm mt-1">
+              Gestiona todos los usuarios del sitio
+            </p>
 
             {error && (
               <div className="mt-4 p-3 bg-red-500/20 border border-red-500 rounded-lg">
                 <p className="text-red-300">{error}</p>
-                <button
-                  onClick={cargarUsuarios}
-                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                >
-                  Reintentar
-                </button>
               </div>
             )}
 
@@ -190,31 +151,16 @@ export const AdminUsuarios = {
               </div>
             ) : (
               <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                {usuarios.map((usuario, index) => {
-                  const id = usuario._id || usuario.id || usuario.uid;
-                  console.log("Usuario:", id, usuario.correo);
-                  return (
-                    <UsuarioItem
-                      key={`${id || "user"}-${index}`}
-                      usuario={usuario}
-                      onChangeRole={openConfirmModal}
-                      onEliminar={openConfirmModal}
-                      loading={loading}
-                    />
-                  );
-                })}
+                {usuarios.map((usuario, index) => (
+                  <UsuarioItem
+                    key={usuario._id || index}
+                    usuario={usuario}
+                    onToggleState={openConfirmModal}
+                    loading={loading}
+                  />
+                ))}
               </div>
             )}
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={handleClose}
-                disabled={loading}
-                className="px-6 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
-              >
-                Cerrar
-              </button>
-            </div>
           </div>
 
           <ConfirmModal
@@ -229,9 +175,11 @@ export const AdminUsuarios = {
   }),
 };
 
-// Componente memoizado para items de usuario
-const UsuarioItem = React.memo(
-  ({ usuario, onChangeRole, onEliminar, loading }) => (
+// Componente de usuario individual
+const UsuarioItem = React.memo(({ usuario, onToggleState, loading }) => {
+  const id = usuario._id || usuario.id || usuario.uid;
+
+  return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -261,34 +209,28 @@ const UsuarioItem = React.memo(
             {usuario.estado ? "Activo" : "Inactivo"}
           </span>
         </div>
-
-        {usuario.telefono && (
-          <p className="text-white/60 text-sm mt-2">
-            Teléfono: {usuario.telefono}
-          </p>
-        )}
       </div>
 
+      {/* Boton deshabilitado si es admin */}
       <div className="flex gap-2 ml-4">
         <button
-          onClick={() => onChangeRole(usuario, "changeRole")}
-          className={`px-4 py-2 rounded-lg transition-colors text-sm ${
+          onClick={() => onToggleState(usuario, "toggleState")}
+          className={`px-4 py-2 mr-1 rounded-full transition-colors text-sm ${
             usuario.rol === "ADMIN_ROLE"
-              ? "bg-orange-500 text-white hover:bg-orange-600"
-              : "bg-purple-500 text-white hover:bg-purple-600"
+              ? "bg-gray-600 cursor-not-allowed text-white/40"
+              : usuario.estado
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-green-500 hover:bg-green-600 text-white"
           }`}
-          disabled={loading}
+          disabled={loading || usuario.rol === "ADMIN_ROLE"}
         >
-          {usuario.rol === "ADMIN_ROLE" ? "Quitar Admin" : "Hacer Admin"}
-        </button>
-        <button
-          onClick={() => onEliminar(usuario, "delete")}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
-          disabled={loading || !usuario.estado}
-        >
-          {usuario.estado ? "Desactivar" : "Activar"}
+          {usuario.rol === "ADMIN_ROLE"
+            ? "Bloqueado"
+            : usuario.estado
+            ? "Desactivar"
+            : "Activar"}
         </button>
       </div>
     </motion.div>
-  )
-);
+  );
+});

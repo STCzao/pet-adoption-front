@@ -31,11 +31,14 @@ export const CrearPublicacion = {
     const [result, setResult] = useState("");
     const [uploading, setUploading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     modalControl = { setOpen };
 
     React.useEffect(() => {
       if (open) {
+        setLoading(true);
+        const timer = setTimeout(() => setLoading(false), 800);
         document.body.style.overflow = "hidden";
         document.documentElement.style.overflow = "hidden";
       } else {
@@ -384,11 +387,31 @@ export const CrearPublicacion = {
         >
           <motion.form
             onSubmit={handleSubmit}
-            className="max-w-2xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm"
+            className="relative max-w-2xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
+              disabled={submitting}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
             <div className="flex flex-col items-center justify-center">
               <h1 className="text-white text-3xl mt-2 font-medium">
                 Crear publicación
@@ -398,359 +421,308 @@ export const CrearPublicacion = {
               </p>
             </div>
 
-            {/* Tipo de Publicación */}
-            <div className="flex items-center w-full mt-6 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-              <select
-                name="tipo"
-                value={form.tipo}
-                onChange={handleChange}
-                disabled={submitting}
-                className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-              >
-                <option value="">Tipo de Publicación *</option>
-                <option value="PERDIDO">Perdido</option>
-                <option value="ENCONTRADO">Encontrado</option>
-                <option value="ADOPCION">Adopción</option>
-              </select>
-            </div>
-            {errors.tipo && (
-              <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                {errors.tipo}
-              </p>
-            )}
-
-            {/* Imagen */}
-            <div className="flex items-center justify-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden gap-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={uploading || submitting}
-                className="bg-transparent text-gray-500 outline-none text-sm w-full file:h-10 file:ml-2 file:p-3 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF7857] file:text-white hover:file:bg-[#E5674F] text-center"
-              />
-            </div>
-            {errors.img && (
-              <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                {errors.img}
-              </p>
-            )}
-
-            {form.img && (
-              <div className="mt-2 flex justify-center">
-                <img
-                  src={form.img}
-                  alt="Vista previa"
-                  className="w-32 h-32 object-cover rounded-2xl border border-white/50"
-                />
+            {loading ? (
+              <div className="flex justify-center items-center p-8">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#FF7857]" />
               </div>
-            )}
-
-            {/* Título */}
-            <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-              <input
-                type="text"
-                name="titulo"
-                placeholder="Título *"
-                value={form.titulo}
-                onChange={handleChange}
-                disabled={submitting}
-                className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-              />
-            </div>
-            {errors.titulo && (
-              <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                {errors.titulo}
-              </p>
-            )}
-
-            {/* Descripción */}
-            <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
-              <textarea
-                name="descripcion"
-                placeholder="Descripción *"
-                value={form.descripcion}
-                onChange={handleChange}
-                disabled={submitting}
-                rows="3"
-                className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
-              />
-            </div>
-            {errors.descripcion && (
-              <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                {errors.descripcion}
-              </p>
-            )}
-
-            {/* WhatsApp */}
-            <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-              <input
-                type="text"
-                name="whatsapp"
-                placeholder="WhatsApp de Contacto *"
-                value={form.whatsapp}
-                onChange={handleChange}
-                disabled={submitting}
-                className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-              />
-            </div>
-            {errors.whatsapp && (
-              <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                {errors.whatsapp}
-              </p>
-            )}
-
-            {/* Campos para PERDIDO/ENCONTRADO */}
-            {(form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") && (
+            ) : (
               <>
+                {/* Tipo de Publicación */}
+                <div className="flex items-center w-full mt-6 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <select
+                    name="tipo"
+                    value={form.tipo}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                  >
+                    <option value="">Tipo de Publicación *</option>
+                    <option value="PERDIDO">Perdido</option>
+                    <option value="ENCONTRADO">Encontrado</option>
+                    <option value="ADOPCION">Adopción</option>
+                  </select>
+                </div>
+                {errors.tipo && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.tipo}
+                  </p>
+                )}
+
+                {/* Imagen */}
+                <div className="flex items-center justify-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading || submitting}
+                    className="bg-transparent text-gray-500 outline-none text-sm w-full file:h-10 file:ml-2 file:p-3 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF7857] file:text-white hover:file:bg-[#E5674F] text-center"
+                  />
+                </div>
+                {errors.img && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.img}
+                  </p>
+                )}
+
+                {form.img && (
+                  <div className="mt-2 flex justify-center">
+                    <img
+                      src={form.img}
+                      alt="Vista previa"
+                      className="w-32 h-32 object-cover rounded-2xl border border-white/50"
+                    />
+                  </div>
+                )}
+
+                {/* Título */}
                 <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                   <input
                     type="text"
-                    name="lugar"
-                    placeholder="Lugar *"
-                    value={form.lugar}
+                    name="titulo"
+                    placeholder="Título *"
+                    value={form.titulo}
                     onChange={handleChange}
                     disabled={submitting}
                     className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                   />
                 </div>
-                {errors.lugar && (
+                {errors.titulo && (
                   <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                    {errors.lugar}
+                    {errors.titulo}
                   </p>
                 )}
 
-                <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                  <input
-                    type="date"
-                    name="fecha"
-                    value={form.fecha}
+                {/* Descripción */}
+                <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
+                  <textarea
+                    name="descripcion"
+                    placeholder="Descripción *"
+                    value={form.descripcion}
                     onChange={handleChange}
                     disabled={submitting}
-                    className="bg-transparent pr-8 text-gray-500 outline-none text-sm w-full h-full"
+                    rows="3"
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
                   />
                 </div>
-                {errors.fecha && (
+                {errors.descripcion && (
                   <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                    {errors.fecha}
+                    {errors.descripcion}
                   </p>
                 )}
-              </>
-            )}
 
-            {/* Raza y Color */}
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                <input
-                  type="text"
-                  name="raza"
-                  placeholder="Raza *"
-                  value={form.raza}
-                  onChange={handleChange}
-                  disabled={submitting}
-                  className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                />
-              </div>
-              {errors.raza && (
-                <p className="text-red-400 text-xs mt-1 text-left w-full px-4 col-span-2">
-                  {errors.raza}
-                </p>
-              )}
-
-              <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                <input
-                  type="text"
-                  name="color"
-                  placeholder="Color *"
-                  value={form.color}
-                  onChange={handleChange}
-                  disabled={submitting}
-                  className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                />
-              </div>
-              {errors.color && (
-                <p className="text-red-400 text-xs mt-1 text-left w-full px-4 col-span-2">
-                  {errors.color}
-                </p>
-              )}
-            </div>
-
-            {/* Sexo, Tamaño y Edad */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                <select
-                  name="sexo"
-                  value={form.sexo}
-                  onChange={handleChange}
-                  disabled={submitting}
-                  className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-                >
-                  <option value="">Sexo *</option>
-                  <option value="MACHO">Macho</option>
-                  <option value="HEMBRA">Hembra</option>
-                </select>
-              </div>
-
-              <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                <select
-                  name="tamaño"
-                  value={form.tamaño}
-                  onChange={handleChange}
-                  disabled={submitting}
-                  className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-                >
-                  <option value="">Tamaño *</option>
-                  <option value="PEQUEÑO">Pequeño</option>
-                  <option value="MEDIANO">Mediano</option>
-                  <option value="GRANDE">Grande</option>
-                </select>
-              </div>
-
-              <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                <input
-                  type="text"
-                  name="edad"
-                  placeholder="Edad *"
-                  value={form.edad}
-                  onChange={handleChange}
-                  disabled={submitting}
-                  className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                />
-              </div>
-            </div>
-
-            {/* Mostrar errores de los campos grid */}
-            {(errors.sexo || errors.tamaño || errors.edad) && (
-              <div className="grid grid-cols-3 gap-4 mt-1">
-                {errors.sexo && (
-                  <p className="text-red-400 text-xs text-left px-4">
-                    {errors.sexo}
-                  </p>
-                )}
-                {errors.tamaño && (
-                  <p className="text-red-400 text-xs text-left px-4">
-                    {errors.tamaño}
-                  </p>
-                )}
-                {errors.edad && (
-                  <p className="text-red-400 text-xs text-left px-4">
-                    {errors.edad}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Campos para ADOPCION */}
-            {form.tipo === "ADOPCION" && (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                  <select
-                    name="afinidad"
-                    value={form.afinidad}
+                {/* WhatsApp */}
+                <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <input
+                    type="text"
+                    name="whatsapp"
+                    placeholder="WhatsApp de Contacto *"
+                    value={form.whatsapp}
                     onChange={handleChange}
                     disabled={submitting}
-                    className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-                  >
-                    <option value="">Afinidad con Niños *</option>
-                    <option value="ALTA">Alta</option>
-                    <option value="MEDIA">Media</option>
-                    <option value="BAJA">Baja</option>
-                  </select>
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                  />
                 </div>
+                {errors.whatsapp && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.whatsapp}
+                  </p>
+                )}
 
-                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                  <select
-                    name="energia"
-                    value={form.energia}
-                    onChange={handleChange}
-                    disabled={submitting}
-                    className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-                  >
-                    <option value="">Nivel de Energía *</option>
-                    <option value="ALTA">Alta</option>
-                    <option value="MEDIA">Media</option>
-                    <option value="BAJA">Baja</option>
-                  </select>
-                </div>
+                {/* Campos para PERDIDO/ENCONTRADO */}
+                {(form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") && (
+                  <>
+                    <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <input
+                        type="text"
+                        name="lugar"
+                        placeholder="Lugar *"
+                        value={form.lugar}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                      />
+                    </div>
+                    {errors.lugar && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.lugar}
+                      </p>
+                    )}
 
-                <div className="col-span-2 flex items-center justify-center mt-2">
-                  <label className="flex items-center text-white">
+                    <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <input
+                        type="date"
+                        name="fecha"
+                        value={form.fecha}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent pr-8 text-gray-500 outline-none text-sm w-full h-full"
+                      />
+                    </div>
+                    {errors.fecha && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.fecha}
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {/* Raza y Color */}
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                     <input
-                      type="checkbox"
-                      name="castrado"
-                      checked={form.castrado}
+                      type="text"
+                      name="raza"
+                      placeholder="Raza *"
+                      value={form.raza}
                       onChange={handleChange}
                       disabled={submitting}
-                      className="mr-2 w-4 h-4 text-[#FF7857] bg-white border-white rounded focus:ring-[#FF7857]"
+                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     />
-                    ¿Está castrado?
-                  </label>
+                  </div>
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                    <input
+                      type="text"
+                      name="color"
+                      placeholder="Color *"
+                      value={form.color}
+                      onChange={handleChange}
+                      disabled={submitting}
+                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                    />
+                  </div>
                 </div>
 
-                {/* Mostrar errores de adopción */}
-                {(errors.afinidad || errors.energia) && (
-                  <div className="col-span-2 grid grid-cols-2 gap-4 mt-1">
-                    {errors.afinidad && (
-                      <p className="text-red-400 text-xs text-left px-4">
-                        {errors.afinidad}
-                      </p>
-                    )}
-                    {errors.energia && (
-                      <p className="text-red-400 text-xs text-left px-4">
-                        {errors.energia}
-                      </p>
-                    )}
+                {/* Sexo, Tamaño y Edad */}
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                    <select
+                      name="sexo"
+                      value={form.sexo}
+                      onChange={handleChange}
+                      disabled={submitting}
+                      className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                    >
+                      <option value="">Sexo *</option>
+                      <option value="MACHO">Macho</option>
+                      <option value="HEMBRA">Hembra</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                    <select
+                      name="tamaño"
+                      value={form.tamaño}
+                      onChange={handleChange}
+                      disabled={submitting}
+                      className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                    >
+                      <option value="">Tamaño *</option>
+                      <option value="PEQUEÑO">Pequeño</option>
+                      <option value="MEDIANO">Mediano</option>
+                      <option value="GRANDE">Grande</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                    <input
+                      type="text"
+                      name="edad"
+                      placeholder="Edad *"
+                      value={form.edad}
+                      onChange={handleChange}
+                      disabled={submitting}
+                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Campos para ADOPCION */}
+                {form.tipo === "ADOPCION" && (
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <select
+                        name="afinidad"
+                        value={form.afinidad}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                      >
+                        <option value="">Afinidad con Niños *</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="BAJA">Baja</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <select
+                        name="energia"
+                        value={form.energia}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                      >
+                        <option value="">Nivel de Energía *</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="BAJA">Baja</option>
+                      </select>
+                    </div>
+
+                    <div className="col-span-2 flex items-center justify-center mt-2">
+                      <label className="flex items-center text-white">
+                        <input
+                          type="checkbox"
+                          name="castrado"
+                          checked={form.castrado}
+                          onChange={handleChange}
+                          disabled={submitting}
+                          className="mr-2 w-4 h-4 text-[#FF7857] bg-white border-white rounded focus:ring-[#FF7857]"
+                        />
+                        ¿Está castrado?
+                      </label>
+                    </div>
                   </div>
                 )}
-              </div>
-            )}
 
-            {/* Detalles Adicionales */}
-            <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
-              <textarea
-                name="detalles"
-                placeholder="Detalles Adicionales"
-                value={form.detalles}
-                onChange={handleChange}
-                disabled={submitting}
-                rows="2"
-                className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
-              />
-            </div>
-            {errors.detalles && (
-              <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                {errors.detalles}
-              </p>
-            )}
+                {/* Detalles Adicionales */}
+                <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
+                  <textarea
+                    name="detalles"
+                    placeholder="Detalles Adicionales"
+                    value={form.detalles}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    rows="2"
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
+                  />
+                </div>
 
-            {/* Resultado */}
-            {result && (
-              <p
-                className={`text-center mt-4 ${
-                  result.includes("éxito") ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                {result}
-              </p>
-            )}
+                {/* Resultado */}
+                {result && (
+                  <p
+                    className={`text-center mt-4 ${
+                      result.includes("éxito")
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {result}
+                  </p>
+                )}
 
-            {/* Botones */}
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={submitting}
-                className="px-6 py-2 rounded-full text-white bg-red-500  transition-colors disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
-              >
-                {submitting ? "Creando..." : "Crear Publicación"}
-              </button>
-            </div>
+                {/* Botones */}
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
+                  >
+                    {submitting ? "Creando..." : "Crear Publicación"}
+                  </button>
+                </div>
+              </>
+            )}
           </motion.form>
         </motion.div>
       </div>

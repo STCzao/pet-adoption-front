@@ -6,72 +6,59 @@ export const ConfirmModal = React.memo(
     if (!confirmModal.isOpen) return null;
 
     const getTitle = () => {
-      if (type === "publicacion") {
-        return "Eliminar Publicación";
+      switch (type) {
+        case "perfil":
+          return "Eliminar perfil";
+        case "publicacion":
+          return "Eliminar publicacion";
+        case "usuario":
+          return confirmModal.item?.estado
+            ? "Desactivar usuario"
+            : "Activar usuario";
+        default:
+          return "Confirmar accion";
       }
-      return confirmModal.action === "delete"
-        ? confirmModal.item?.estado
-          ? "Desactivar Usuario"
-          : "Activar Usuario"
-        : "Cambiar Rol de Usuario";
     };
 
     const getMessage = () => {
-      if (type === "publicacion") {
-        return `¿Estás seguro de que quieres eliminar "${confirmModal.item?.titulo}"? Esta acción no se puede deshacer.`;
-      }
-
-      return confirmModal.action === "delete"
-        ? `¿Estás seguro de que quieres ${
+      switch (type) {
+        case "perfil":
+          return "¿Estas seguro de que quieres eliminar tu perfil? Esta accion no puede deshacerse.";
+        case "publicacion":
+          return `¿Estas seguro de que quieres eliminar "${confirmModal.item?.titulo}"? Esta accion no se puede deshacer.`;
+        case "usuario":
+          return `¿Estas seguro de que quieres ${
             confirmModal.item?.estado ? "desactivar" : "activar"
-          } a "${confirmModal.item?.nombre}"?`
-        : `¿Estás seguro de que quieres ${
-            confirmModal.item?.rol === "ADMIN_ROLE"
-              ? "quitar permisos de administrador a"
-              : "convertir en administrador a"
-          } "${confirmModal.item?.nombre}"?`;
-    };
-
-    const getConfirmText = () => {
-      if (type === "publicacion") return "Eliminar";
-      return confirmModal.action === "delete"
-        ? confirmModal.item?.estado
-          ? "Desactivar"
-          : "Activar"
-        : "Confirmar";
-    };
-
-    const getConfirmColor = () => {
-      if (type === "publicacion" || confirmModal.action === "delete") {
-        return "bg-red-500 hover:bg-red-600";
+          } al usuario "${confirmModal.item?.nombre}"?`;
+        default:
+          return "Confirma la accion para continuar.";
       }
-      return "bg-purple-500 hover:bg-purple-600";
     };
 
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[201] p-4">
+      <div className="fixed inset-0 flex items-center justify-center bg-black/10 bg-opacity-50 z-50">
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white rounded-lg p-6 max-w-md w-full"
+          exit={{ scale: 0.8, opacity: 0 }}
+          className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {getTitle()}
-          </h3>
-          <p className="text-gray-600 mb-6">{getMessage()}</p>
+          <h2 className="text-lg font-semibold mb-4">{getTitle()}</h2>
+          <p className="text-black mb-6">{getMessage()}</p>
 
-          <div className="flex gap-3 justify-end">
+          <div className="flex justify-center gap-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 rounded-full bg-black text-white hover:bg-black-400 transition"
             >
               Cancelar
             </button>
+
             <button
               onClick={onConfirm}
-              className={`px-4 py-2 text-white rounded-lg transition-colors ${getConfirmColor()}`}
+              className="px-4 py-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition"
             >
-              {getConfirmText()}
+              Confirmar
             </button>
           </div>
         </motion.div>

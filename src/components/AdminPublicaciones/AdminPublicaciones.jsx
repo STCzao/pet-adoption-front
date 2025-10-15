@@ -44,12 +44,9 @@ export const AdminPublicaciones = {
         setError("");
         const result = await adminService.getTodasPublicaciones();
 
-        if (result.success) {
-          setPublicaciones(result.publicaciones || []);
-        } else {
-          setError(result.msg || "Error al cargar publicaciones");
-        }
-      } catch (err) {
+        if (result.success) setPublicaciones(result.publicaciones || []);
+        else setError(result.msg || "Error al cargar publicaciones");
+      } catch {
         setError("Error de conexión al servidor");
       } finally {
         setLoading(false);
@@ -70,8 +67,29 @@ export const AdminPublicaciones = {
           setError(result.msg || "Error al eliminar publicación");
           return false;
         }
-      } catch (err) {
+      } catch {
         setError("Error de conexión al eliminar");
+        return false;
+      }
+    }, []);
+
+    const handleEditarEstado = useCallback(async (id, nuevoEstado) => {
+      try {
+        const result = await publicacionesService.actualizarEstado(
+          id,
+          nuevoEstado
+        );
+        if (result.success) {
+          setPublicaciones((prev) =>
+            prev.map((p) => (p._id === id ? { ...p, estado: nuevoEstado } : p))
+          );
+          return true;
+        } else {
+          setError(result.msg || "Error al actualizar estado");
+          return false;
+        }
+      } catch {
+        setError("Error de conexión al actualizar estado");
         return false;
       }
     }, []);
@@ -100,13 +118,32 @@ export const AdminPublicaciones = {
     if (!open) return null;
 
     return (
-      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
+      <div className="font-medium fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center w-full max-w-6xl max-h-[90vh] overflow-y-auto"
         >
           <div className="max-w-6xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm">
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
             <div className="flex flex-col items-center justify-center">
               <h1 className="text-white text-3xl mt-2 font-medium">
                 Administrar Publicaciones
@@ -139,6 +176,7 @@ export const AdminPublicaciones = {
                     key={publicacion._id}
                     publicacion={publicacion}
                     onEliminar={openConfirmModal}
+                    onEditarEstado={handleEditarEstado}
                     loading={loading}
                   />
                 ))}
@@ -150,16 +188,6 @@ export const AdminPublicaciones = {
                 )}
               </div>
             )}
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={handleClose}
-                disabled={loading}
-                className="px-6 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
-              >
-                Cerrar
-              </button>
-            </div>
           </div>
 
           <ConfirmModal
@@ -174,69 +202,63 @@ export const AdminPublicaciones = {
   }),
 };
 
-// Componente memoizado para items individuales - ✅ CORREGIDO CON KEYS
-const PublicacionItem = React.memo(({ publicacion, onEliminar, loading }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="bg-white/10 border border-white/20 rounded-lg p-4 flex justify-between items-start backdrop-blur-sm"
-  >
-    <div className="flex-1 text-left">
-      <h3 className="font-semibold text-white text-lg">{publicacion.titulo}</h3>
+const PublicacionItem = React.memo(
+  ({ publicacion, onEliminar, onEditarEstado, loading }) => {
+    const estados = ["ACTIVO", "INACTIVO", "ENCONTRADO", "ADOPTADO", "VISTO"];
 
-      {/* ✅ CORREGIDO - Elementos hermanos con keys únicas */}
-      <div className="flex flex-wrap gap-2 mt-2 text-sm text-white/80">
-        <span
-          key={`${publicacion._id}-tipo`}
-          className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded"
-        >
-          {publicacion.tipo}
-        </span>
-        <span
-          key={`${publicacion._id}-estado`}
-          className={`px-2 py-1 rounded ${
-            publicacion.estado === "ACTIVO"
-              ? "bg-green-500/20 text-green-300"
-              : publicacion.estado === "INACTIVO"
-              ? "bg-red-500/20 text-red-300"
-              : "bg-yellow-500/20 text-yellow-300"
-          }`}
-        >
-          {publicacion.estado}
-        </span>
-        <span key={`${publicacion._id}-raza`} className="text-white/70">
-          Raza: {publicacion.raza}
-        </span>
-        <span key={`${publicacion._id}-color`} className="text-white/70">
-          Color: {publicacion.color}
-        </span>
-      </div>
+    const handleEstadoChange = (e) => {
+      const nuevoEstado = e.target.value;
+      onEditarEstado(publicacion._id, nuevoEstado);
+    };
 
-      <p className="text-white/60 text-sm mt-2">
-        Por: {publicacion.usuario?.nombre} •
-        {publicacion.fechaCreacion
-          ? new Date(publicacion.fechaCreacion).toLocaleDateString()
-          : "Sin fecha"}
-      </p>
-    </div>
-
-    <div className="flex gap-2 ml-4">
-      <button
-        onClick={() => {
-          /* Implementar edición */
-        }}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-        disabled={loading}
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/10 border border-white/20 rounded-lg p-4 flex justify-between items-start backdrop-blur-sm"
       >
-        Editar
-      </button>
-      <button
-        onClick={() => onEliminar(publicacion, "delete")}
-        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
-        disabled={loading}
-      >
-        Eliminar
-      </button>
-    </div>
-  </motion.div>
-));
+        <div className="flex-1 text-left">
+          <h3 className="font-semibold text-white text-lg">
+            {publicacion.titulo}
+          </h3>
+          <div className="flex flex-wrap gap-2 mt-2 text-sm text-white/80">
+            <span className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+              {publicacion.tipo}
+            </span>
+            <select
+              value={publicacion.estado}
+              onChange={handleEstadoChange}
+              disabled={loading}
+              className="bg-white/10 border border-white/20 text-white/80 px-2 py-1 rounded"
+            >
+              {estados.map((estado) => (
+                <option className="text-black" key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+            <span className="text-white/70">Raza: {publicacion.raza}</span>
+            <span className="text-white/70">Color: {publicacion.color}</span>
+          </div>
+
+          <p className="text-white/60 text-sm mt-2">
+            Por: {publicacion.usuario?.nombre} •{" "}
+            {publicacion.fechaCreacion
+              ? new Date(publicacion.fechaCreacion).toLocaleDateString()
+              : "Sin fecha"}
+          </p>
+        </div>
+
+        <div className="flex gap-2 ml-4">
+          <button
+            onClick={() => onEliminar(publicacion, "delete")}
+            className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors text-sm"
+            disabled={loading}
+          >
+            Eliminar
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+);
