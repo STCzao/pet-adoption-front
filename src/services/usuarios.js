@@ -151,11 +151,12 @@ export const usuariosService = {
         },
       });
 
-      if (resp.status === 401) {
+      // CORREGIR: Manejar tanto 401 como 403
+      if (resp.status === 401 || resp.status === 403) {
         localStorage.removeItem("token");
         return {
           ok: false,
-          msg: "Sesión expirada",
+          msg: "No tiene permisos para esta acción",
         };
       }
 

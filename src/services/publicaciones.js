@@ -53,6 +53,32 @@ export const publicacionesService = {
     }
   },
 
+  actualizarEstado: async (id, estado) => {
+    try {
+      const token = localStorage.getItem("token");
+      const resp = await fetch(`${API_URL}/publicaciones/${id}/estado`, {
+        method: "PUT",
+        headers: {
+          "Content-Type" : "application/json",
+          "x-token": token || "",
+        },
+        body: JSON.stringify({ estado }),
+      })
+
+      if (!resp.ok) {
+        const errorData = await resp.json();
+        return { success: false, msg: errorData.msg || "Error al actualizar estado"};
+      }
+
+      const data = await resp.json();
+      return { success: true, publicacion: data.publicacion};
+    } catch (error) {
+      console.error("Error actualizando estado:", error);
+      return { success: false, msg: "Error de conexion al servidor"};
+    }
+  },
+
+
   borrarPublicacion: async (id) => {
     try {
       const token = localStorage.getItem("token");

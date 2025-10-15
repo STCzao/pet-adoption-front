@@ -20,13 +20,9 @@ export const EditarPerfil = {
       isOpen: false,
       action: "",
     });
-
     const [editingField, setEditingField] = useState(null);
 
-    const [form, setForm] = useState({
-      nombre: "",
-      telefono: "",
-    });
+    const [form, setForm] = useState({ nombre: "", telefono: "" });
 
     modalControl = { setOpen };
 
@@ -47,9 +43,6 @@ export const EditarPerfil = {
       setResult("");
       try {
         const response = await usuariosService.getMiPerfil();
-
-        console.log("Respuesta de carga:", response);
-
         if (response.ok && response.usuario) {
           setUserData(response.usuario);
           setForm({
@@ -57,11 +50,11 @@ export const EditarPerfil = {
             telefono: response.usuario.telefono || "",
           });
         } else {
-          const errorMsg = response.msg || "Error al cargar perfil";
-          setResult(errorMsg);
-
-          // Si es error de token, cerrar modal
-          if (errorMsg.includes("token") || errorMsg.includes("sesión")) {
+          setResult(response.msg || "Error al cargar perfil");
+          if (
+            response.msg?.includes("token") ||
+            response.msg?.includes("sesión")
+          ) {
             setTimeout(() => {
               setOpen(false);
               resetForm();
@@ -69,7 +62,6 @@ export const EditarPerfil = {
           }
         }
       } catch (error) {
-        console.error("Error al cargar perfil:", error);
         setResult("Error de conexión al servidor");
       } finally {
         setLoading(false);
@@ -91,22 +83,15 @@ export const EditarPerfil = {
     const handleChange = (e) => {
       const { name, value } = e.target;
       setForm((prev) => ({ ...prev, [name]: value }));
-
-      if (errors[name]) {
-        setErrors((prev) => {
-          const copy = { ...prev };
-          delete copy[name];
-          return copy;
-        });
-      }
+      if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
     const validarCampo = (campo, valor) => {
       const valorTrimmed = valor.trim();
+      if (!valorTrimmed) return `El ${campo} es obligatorio`;
 
       switch (campo) {
         case "nombre":
-          if (!valorTrimmed) return "El nombre es obligatorio";
           if (valorTrimmed.length < 3)
             return "Debe tener al menos 3 caracteres";
           if (valorTrimmed.length > 40)
@@ -115,7 +100,6 @@ export const EditarPerfil = {
             return "Solo puede contener letras y espacios";
           break;
         case "telefono":
-          if (!valorTrimmed) return "El teléfono es obligatorio";
           if (!/^[0-9]{7,15}$/.test(valorTrimmed))
             return "Debe contener 7-15 dígitos";
           break;
@@ -125,23 +109,16 @@ export const EditarPerfil = {
       return "";
     };
 
-    const startEditing = (fieldName) => {
-      setEditingField(fieldName);
-    };
+    const startEditing = (fieldName) => setEditingField(fieldName);
 
     const cancelEditing = (fieldName) => {
       setEditingField(null);
-      if (userData) {
+      if (userData)
         setForm((prev) => ({
           ...prev,
           [fieldName]: userData[fieldName] || "",
         }));
-      }
-      setErrors((prev) => {
-        const copy = { ...prev };
-        delete copy[fieldName];
-        return copy;
-      });
+      setErrors((prev) => ({ ...prev, [fieldName]: "" }));
     };
 
     const saveField = async (fieldName) => {
@@ -165,105 +142,26 @@ export const EditarPerfil = {
           `Actualizando ${fieldName === "nombre" ? "nombre" : "teléfono"}...`
         );
 
-        const updateData = { [fieldName]: value };
-
-        const response = await usuariosService.actualizarPerfil(updateData);
-
-        console.log("Respuesta de actualización:", response);
-
-        if (response.ok && response.usuario) {
-          setResult("✅ Campo actualizado exitosamente");
-          setUserData(response.usuario);
-          setEditingField(null);
-
-          // Disparar evento personalizado para actualizar el sidebar
-          window.dispatchEvent(
-            new CustomEvent("userProfileUpdated", {
-              detail: { user: response.usuario },
-            })
-          );
-
-          setTimeout(() => setResult(""), 3000);
-        } else {
-          const errorMsg = response.msg || "Error al actualizar";
-          setResult(errorMsg);
-
-          // Si es error de token, cerrar modal
-          if (errorMsg.includes("token") || errorMsg.includes("sesión")) {
-            setTimeout(() => {
-              setOpen(false);
-              resetForm();
-            }, 3000);
-          }
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        setResult("Error de conexión");
-      } finally {
-        setSubmitting(false);
-      }
-    };
-
-    const handleSubmit = async (e) => {
-      e?.preventDefault();
-
-      const nuevosErrores = {};
-      Object.keys(form).forEach((campo) => {
-        const valorTrimmed = form[campo].trim();
-        const originalValorTrimmed = (userData[campo] || "").trim();
-
-        if (valorTrimmed !== originalValorTrimmed) {
-          const error = validarCampo(campo, valorTrimmed);
-          if (error) nuevosErrores[campo] = error;
-        }
-      });
-
-      setErrors(nuevosErrores);
-      if (Object.keys(nuevosErrores).length > 0) return;
-
-      const modificados = Object.keys(form).filter(
-        (key) => form[key].trim() !== (userData[key] || "").trim()
-      );
-
-      if (modificados.length === 0) {
-        setResult("No hay cambios para guardar");
-        setTimeout(() => setResult(""), 2000);
-        return;
-      }
-
-      try {
-        setSubmitting(true);
-        setResult("Actualizando perfil...");
-
-        const datosActualizados = {};
-        modificados.forEach((campo) => {
-          datosActualizados[campo] = form[campo].trim();
+        const response = await usuariosService.actualizarPerfil({
+          [fieldName]: value,
         });
 
-        const response = await usuariosService.actualizarPerfil(
-          datosActualizados
-        );
-
-        console.log("Respuesta de actualización completa:", response);
-
         if (response.ok && response.usuario) {
-          setResult("✅ Perfil actualizado exitosamente");
+          setResult("¡Campo actualizado exitosamente!");
           setUserData(response.usuario);
-
-          // Disparar evento personalizado para actualizar el sidebar
+          setEditingField(null);
           window.dispatchEvent(
             new CustomEvent("userProfileUpdated", {
               detail: { user: response.usuario },
             })
           );
-
           setTimeout(() => setResult(""), 3000);
         } else {
-          const errorMsg = response.msg || "Error al actualizar perfil";
-          setResult(errorMsg);
-
-          // Si es error de token, cerrar modal
-          if (errorMsg.includes("token") || errorMsg.includes("sesión")) {
+          setResult(response.msg || "Error al actualizar");
+          if (
+            response.msg?.includes("token") ||
+            response.msg?.includes("sesión")
+          ) {
             setTimeout(() => {
               setOpen(false);
               resetForm();
@@ -271,7 +169,6 @@ export const EditarPerfil = {
           }
         }
       } catch (error) {
-        console.error("Error en handleSubmit:", error);
         setResult("Error de conexión");
       } finally {
         setSubmitting(false);
@@ -279,16 +176,27 @@ export const EditarPerfil = {
     };
 
     const handleEliminarCuenta = async () => {
-      if (!userData?._id) return;
+      const userId = userData?.uid;
+      if (!userId) {
+        setResult("Error: No se pudo obtener el ID del usuario");
+        setConfirmModal({ isOpen: false, action: "" });
+        return;
+      }
+
       setSubmitting(true);
       try {
-        const res = await usuariosService.borrarUsuario(userData._id);
-        if (res.msg) {
+        const res = await usuariosService.borrarUsuario(userId);
+        if (res.ok) {
+          setResult("Cuenta eliminada exitosamente. Redirigiendo...");
           localStorage.removeItem("token");
-          window.location.href = "/";
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
+        } else {
+          setResult(res.msg || "Error al eliminar cuenta");
         }
-      } catch {
-        setResult("Error al eliminar cuenta");
+      } catch (error) {
+        setResult("Error de conexión al eliminar cuenta");
       } finally {
         setSubmitting(false);
         setConfirmModal({ isOpen: false, action: "" });
@@ -304,18 +212,15 @@ export const EditarPerfil = {
     };
 
     const handleKeyPress = (e, fieldName) => {
-      if (e.key === "Enter") {
-        saveField(fieldName);
-      } else if (e.key === "Escape") {
-        cancelEditing(fieldName);
-      }
+      if (e.key === "Enter") saveField(fieldName);
+      else if (e.key === "Escape") cancelEditing(fieldName);
     };
 
     if (!open) return null;
 
     return (
       <AnimatePresence>
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
+        <div className="font-medium fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -337,8 +242,6 @@ export const EditarPerfil = {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
                   className="w-5 h-5"
                 >
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -347,7 +250,7 @@ export const EditarPerfil = {
               </button>
 
               <h1 className="text-white text-2xl sm:text-3xl mt-2 font-medium">
-                Mi Perfil
+                Mi perfil
               </h1>
               <p className="text-white/80 text-sm mt-1">
                 Gestiona tu información personal
@@ -363,6 +266,21 @@ export const EditarPerfil = {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-4 mt-6"
                 >
+                  {!loading && !userData && (
+                    <div className="text-center p-4 bg-yellow-500/20 rounded-lg">
+                      <p className="text-yellow-400 text-sm mb-2">
+                        No se pudieron cargar los datos
+                      </p>
+                      <button
+                        type="button"
+                        onClick={cargarDatosUsuario}
+                        className="px-4 py-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition-colors text-sm"
+                      >
+                        Reintentar Carga
+                      </button>
+                    </div>
+                  )}
+
                   {/* Campo Nombre */}
                   <div className="space-y-2">
                     <label className="text-white text-sm text-left block pl-4">
@@ -372,19 +290,19 @@ export const EditarPerfil = {
                       <input
                         type="text"
                         name="nombre"
-                        placeholder="Tu nombre completo"
-                        value={form.nombre || ""}
+                        placeholder="Ingresa tu nombre completo"
+                        value={form.nombre}
                         onChange={handleChange}
                         onFocus={() => startEditing("nombre")}
                         onKeyDown={(e) => handleKeyPress(e, "nombre")}
                         disabled={
                           submitting ||
-                          (editingField && editingField !== "nombre")
+                          (editingField && editingField !== "nombre") ||
+                          !userData
                         }
                         className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full px-2 disabled:opacity-50"
                         maxLength={40}
                       />
-
                       {editingField === "nombre" && (
                         <div className="flex gap-1 ml-2">
                           <button
@@ -451,19 +369,19 @@ export const EditarPerfil = {
                       <input
                         type="text"
                         name="telefono"
-                        placeholder="Tu teléfono"
-                        value={form.telefono || ""}
+                        placeholder="Ingresa tu número de teléfono"
+                        value={form.telefono}
                         onChange={handleChange}
                         onFocus={() => startEditing("telefono")}
                         onKeyDown={(e) => handleKeyPress(e, "telefono")}
                         disabled={
                           submitting ||
-                          (editingField && editingField !== "telefono")
+                          (editingField && editingField !== "telefono") ||
+                          !userData
                         }
                         className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full px-2 disabled:opacity-50"
                         maxLength={15}
                       />
-
                       {editingField === "telefono" && (
                         <div className="flex gap-1 ml-2">
                           <button
@@ -521,7 +439,7 @@ export const EditarPerfil = {
                   {result && (
                     <p
                       className={`text-center mt-4 text-sm ${
-                        result.includes("✅") || result.includes("exitosamente")
+                        result.includes("exitosamente")
                           ? "text-green-400"
                           : result.includes("token") ||
                             result.includes("sesión")
@@ -533,36 +451,16 @@ export const EditarPerfil = {
                     </p>
                   )}
 
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex align-center justify-center gap-3 pt-4">
                     <button
                       type="button"
-                      onClick={() => {
-                        setOpen(false);
-                        resetForm();
-                      }}
-                      disabled={submitting}
-                      className="flex-1 px-6 py-2 rounded-full text-white bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50"
+                      onClick={() => openConfirmModal("delete")}
+                      disabled={submitting || !userData}
+                      className="mt-4 w-50 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Cerrar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={submitting}
-                      className="flex-1 px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
-                    >
-                      {submitting ? "Guardando..." : "Guardar Todo"}
+                      {submitting ? "Eliminando..." : "Eliminar Cuenta"}
                     </button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => openConfirmModal("delete")}
-                    disabled={submitting}
-                    className="mt-4 w-full px-6 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
-                  >
-                    Eliminar Cuenta
-                  </button>
                 </motion.div>
               )}
             </div>
@@ -572,7 +470,7 @@ export const EditarPerfil = {
             confirmModal={confirmModal}
             onClose={closeConfirmModal}
             onConfirm={handleConfirm}
-            type="cuenta"
+            type="perfil"
           />
         </div>
       </AnimatePresence>
