@@ -88,10 +88,10 @@ export const usuariosService = {
       });
 
       if (resp.status === 401) {
-        localStorage.removeItem("token");
         return {
           ok: false,
           msg: "Sesión expirada",
+          status: 401
         };
       }
 

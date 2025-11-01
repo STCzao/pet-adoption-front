@@ -41,7 +41,7 @@ const HomeScreen = ({ cerrarSesion }) => {
             className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity col-span-1"
             onClick={() => navigate("/perdidos")}
           >
-            Perdí una mascota
+            Ver animales perdidos
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 10 }}
@@ -50,7 +50,7 @@ const HomeScreen = ({ cerrarSesion }) => {
             className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity col-span-1"
             onClick={() => navigate("/encontrados")}
           >
-            Encontré una mascota
+            Ver animales encontrados
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 10 }}
@@ -59,7 +59,7 @@ const HomeScreen = ({ cerrarSesion }) => {
             className="border border-white/20 font-medium w-50 h-11 rounded-full text-white bg-white/20 hover:bg-[#FF7857] transition-opacity col-span-1"
             onClick={() => navigate("/adopciones")}
           >
-            Me gustaría adoptar
+            Ver animales en adopción
           </motion.button>
         </div>
       </div>
