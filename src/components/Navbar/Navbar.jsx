@@ -5,7 +5,6 @@ import {
   useSidebar,
   SidebarOpciones,
 } from "../SidebarOpciones/SidebarOpciones";
-
 import { CrearPublicacion } from "../CrearPublicacion/CrearPublicacion";
 import { EditarPerfil } from "../EditarPerfil/EditarPerfil";
 import { VerPublicaciones } from "../VerPublicaciones/VerPublicaciones";
@@ -18,8 +17,8 @@ const NavbarContent = ({ cerrarSesion }) => {
     {
       name: "¿Qué hacer?",
       dropdown: [
-        { name: "¿Qué hacer si perdí a mi perro?", path: "/perdi-perro" },
-        { name: "¿Qué hacer si encontré un perro?", path: "/encontre-perro" },
+        { name: "¿Qué hacer si perdí un animal?", path: "/consejos-perdi" },
+        { name: "¿Qué hacer si encontré un animal?", path: "/consejos-encontre" },
       ],
     },
     { name: "Casos para ayuda", path: "/casos" },
@@ -63,6 +62,10 @@ const NavbarContent = ({ cerrarSesion }) => {
               isScrolled ? "filter-none" : "invert"
             }`}
           />
+          <div className="flex gap-2 ml-5 items-center font-medium">
+            <span className="text-3xl">&#8592;</span>
+            <p>Registra tu animal</p>
+          </div>
         </div>
 
         {/* Contenedor para todos los elementos de la derecha */}

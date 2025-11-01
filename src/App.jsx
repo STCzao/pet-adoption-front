@@ -12,6 +12,8 @@ import { AdminUsuarios } from "./components/AdminUsuarios/AdminUsuarios";
 import PerdidosPage from "../src/pages/PublicacionesPages/PerdidosPage";
 import EncontradosPage from "./pages/PublicacionesPages/EncontradosPage";
 import AdopcionesPage from "./pages/PublicacionesPages/AdopcionesPage";
+import PerdiScreen from "./pages/WhatDoScreen/PerdiScreen";
+import EncontreScreen from "./pages/WhatDoScreen/EncontreScreen";
 
 function App() {
   const [login, setLogin] = useState(false);
@@ -22,8 +24,6 @@ function App() {
   useEffect(() => {
     const verificarToken = async () => {
       const token = localStorage.getItem("token");
-
-      // Si no hay token, ir directamente a login
       if (!token) {
         setLoading(false);
         setLogin(false);
@@ -33,18 +33,19 @@ function App() {
       try {
         const userData = await usuariosService.getMiPerfil();
 
-        // Si hay un mensaje de error, el token es inválido
-        if (userData.msg || userData.errors) {
-          console.warn("Token inválido:", userData.msg || userData.errors);
-          cerrarSesion();
+        if (!userData.ok) {
+          // Solo cerrar sesion si el backend realmente dice que el token no sirve
+          if (userData.status === 401 || userData.msg === "Sesion expirada") {
+            cerrarSesion();
+          } else {
+            console.warn("Error no critico:", userData.msg);
+          }
         } else {
-          // Token válido
-          setUser(userData);
+          setUser(userData.usuario);
           setLogin(true);
         }
-      } catch (error) {
-        console.error("Error al verificar token:", error);
-        cerrarSesion();
+      } catch (err) {
+        console.error("Error al verificar token:", err);
       } finally {
         setLoading(false);
       }
@@ -81,6 +82,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Redirige a las publicaciones */}
         <Route
           path="/perdidos"
           element={
@@ -102,6 +104,25 @@ function App() {
           element={
             <ProtectedRoutes login={login}>
               <AdopcionesPage cerrarSesion={cerrarSesion} />
+            </ProtectedRoutes>
+          }
+        />
+
+        {/* Redirige a los consejos */}
+
+        <Route
+          path="/consejos-perdi"
+          element={
+            <ProtectedRoutes login={login}>
+              <PerdiScreen cerrarSesion={cerrarSesion} />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/consejos-encontre"
+          element={
+            <ProtectedRoutes login={login}>
+              <EncontreScreen cerrarSesion={cerrarSesion} />
             </ProtectedRoutes>
           }
         />
