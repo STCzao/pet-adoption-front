@@ -5,6 +5,7 @@ import {
 } from "../../components/SidebarOpciones/SidebarOpciones";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import Img_quehacer from "../../assets/Img_quehacer.png";
 
 const EncontreScreen = ({ cerrarSesion }) => {
   return (
@@ -13,7 +14,14 @@ const EncontreScreen = ({ cerrarSesion }) => {
         <Navbar cerrarSesion={cerrarSesion} />
         <SidebarOpciones />
       </SidebarProvider>
-      <div className="w-full font-medium min-h-screen bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url(../src/assets/Img_quehacer.png)] bg-cover bg-center text-white flex flex-col items-center justify-center px-4 md:px-10">
+      <div
+        className="w-full min-h-screen text-white flex flex-col items-center justify-center px-4 md:px-10"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${Img_quehacer})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="flex flex-col justify-center items-center text-white/90 max-w-4xl mt-35 mb-15">
           <motion.p className="text-3xl mb-10">
             ¿Qué hacer si encontré un animal?

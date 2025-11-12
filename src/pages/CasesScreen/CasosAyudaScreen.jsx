@@ -9,6 +9,7 @@ import Footer from "../../components/Footer/Footer";
 import { useEffect, useState } from "react";
 import { casosAyudaService } from "../../services/casosayuda";
 import CardsAyuda from "../../components/CardsAyuda/CardsAyuda";
+import Img_Casos from "../../assets/Img_Casos.jpg";
 
 const CasosAyudaScreen = ({ cerrarSesion }) => {
   const [casos, setCasos] = useState([]);
@@ -32,7 +33,14 @@ const CasosAyudaScreen = ({ cerrarSesion }) => {
         <Navbar cerrarSesion={cerrarSesion} />
         <SidebarOpciones />
       </SidebarProvider>
-      <div className="font-medium w-full min-h-screen bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url(../src/assets/Img_Casos.jpg)] bg-cover bg-center text-white flex flex-col items-center justify-center px-4 md:px-10">
+      <div
+        className="w-full min-h-screen text-white flex flex-col items-center justify-center px-4 md:px-10"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${Img_Casos})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="flex flex-col w-full justify-center items-center text-white/90 max-w-4xl mt-35 mb-15">
           <motion.p className="text-3xl mb-10">
             Casos de Ayuda Comunitaria

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Img_login1 from "../../assets/Img_login1.png";
 
 export default function RegisterScreen() {
   const [form, setForm] = useState({
@@ -112,7 +113,14 @@ export default function RegisterScreen() {
   };
 
   return (
-    <div className="w-full font-medium min-h-screen bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url(../src/assets/img_login1.png)] bg-cover bg-center text-white flex flex-col items-center justify-center">
+    <div
+      className="w-full min-h-screen text-white flex flex-col items-center justify-center px-4 md:px-10"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${Img_login1})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
