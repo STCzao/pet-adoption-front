@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Logo_footer from "../../assets/Logo Perdidos y adopciones - Favicon.png";
 
 export default function Footer() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function Footer() {
         <div className="md:max-w-md text-center md:text-left">
           <img
             className="h-20"
-            src="../src/assets/Logo Perdidos y adopciones - Favicon.png"
+            src={Logo_footer}
             alt=""
           />
           <p className="mt-6 text-sm leading-relaxed text-white/90">

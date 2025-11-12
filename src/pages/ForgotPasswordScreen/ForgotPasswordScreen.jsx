@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Img_login1 from "../../assets/Img_login1.png";
 
 const ForgotPasswordScreen = () => {
   const [correo, setCorreo] = useState("");
   const [result, setResult] = useState("");
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -55,7 +55,14 @@ const ForgotPasswordScreen = () => {
   };
 
   return (
-    <div className="font-medium w-full min-h-screen bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url(../src/assets/img_login1.png)] bg-cover bg-center text-white flex flex-col items-center justify-center">
+    <div
+      className="w-full min-h-screen text-white flex flex-col items-center justify-center px-4 md:px-10"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${Img_login1})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
