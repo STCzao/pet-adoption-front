@@ -42,7 +42,7 @@ const AdopcionesPage = () => {
             className="border border-white/20 font-medium mt-10 flex flex-col justify-center p-4 sm:p-5 w-full sm:w-11/12 md:w-full text-base sm:text-lg md:text-xl rounded-lg bg-white/20 mb-8 text-center"
           >
             Aquí podrás consultar sobre todas las mascotas que se encuentran en
-            ADOPCIÓN. Recuerda utilizar los filtros o el buscador para mayor
+            ADOPCIÓN. Recuerda utilizar los filtros para mayor
             precisión.
           </motion.p>
         </div>
