@@ -204,19 +204,6 @@ const NavbarContent = () => {
             </div>
           </div>
 
-          {/* Buscador Desktop - Ahora a la derecha */}
-          <div className="hidden md:flex items-center gap-4">
-            <div>
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className={`px-4 py-2 rounded-md outline-none bg-transparent placeholder-white text-white transition-all ${
-                  isScrolled ? "border border-white" : "border border-[#FF7857]"
-                }`}
-              />
-            </div>
-          </div>
-
           {/* Mobile Menu Button - Mantiene posición */}
           <div className="flex md:hidden items-center gap-3">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
@@ -294,15 +281,6 @@ const NavbarContent = () => {
             </a>
           )
         )}
-
-        {/* Buscador mobile */}
-        <div className="flex items-center rounded-md overflow-hidden px-3 py-1.5 mt-4 w-3/4 border border-white">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="outline-none w-full placeholder-white text-white"
-          />
-        </div>
       </div>
 
       {/* Sidebar y modales */}
