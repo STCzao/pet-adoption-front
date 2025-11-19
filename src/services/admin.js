@@ -4,6 +4,7 @@ const cache = { publicaciones: null, usuarios: null, timestamp: null };
 const CACHE_DURATION = 30000;
 
 export const adminService = {
+  
   getTodasPublicaciones: async () => {
     try {
       const token = localStorage.getItem("token");
@@ -16,7 +17,7 @@ export const adminService = {
         const errorData = await resp.json().catch(() => ({}));
         return {
           success: false,
-          msg: errorData.msg || "Error al obtener publicaciones",
+          msg: errorData.Msg || errorMsg,
         };
       }
 
