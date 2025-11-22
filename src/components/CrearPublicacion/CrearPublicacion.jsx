@@ -668,7 +668,7 @@ export const CrearPublicacion = {
 
                   <div className="mt-4">
                     <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese la edad aproximada de la mascota
+                      Ingrese la edad aproximada de la mascota (puede variar según la raza)
                     </label>
                     <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                       <select
@@ -679,9 +679,9 @@ export const CrearPublicacion = {
                         className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                       >
                         <option value="">Edad *</option>
-                        <option value="CACHORRO">Cachorro</option>
-                        <option value="ADULTO">Adulto</option>
-                        <option value="MAYOR">Mayor</option>
+                        <option value="CACHORRO">Cachorro (hasta 12 meses)</option>
+                        <option value="ADULTO">Adulto (1 a 7 años)</option>
+                        <option value="MAYOR">Mayor (Más de 7 años)</option>
                       </select>
                     </div>
                     {errors.edad && (
