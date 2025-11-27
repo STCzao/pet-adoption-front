@@ -37,7 +37,7 @@ const CardGenerica = ({ publicacion }) => {
 
   return (
     <div
-      className="font-medium w-full max-w-sm h-[36rem] cursor-pointer flex flex-col"
+      className="font-medium w-full max-w-sm h-[36rem] cursor-pointer flex flex-col overflow-hidden"
       onClick={() => setFlipped(!flipped)}
     >
       <div
@@ -58,7 +58,7 @@ const CardGenerica = ({ publicacion }) => {
             <img
               src={img}
               alt={titulo}
-              className="w-full h-64 object-cover rounded-lg mb-3"
+              className="w-full h-70 object-cover rounded-lg mb-1"
             />
           )}
           <h3 className="font-bold text-white text-l mb-1">
@@ -69,7 +69,7 @@ const CardGenerica = ({ publicacion }) => {
               <>{lugar && <p className="mt-2">Lugar: {lugar}</p>}</>
             )}
           </div>
-          <div className="text-xs text-white/90 space-y-1 flex-1 overflow-y-auto">
+          <div className="text-xs text-white/90 space-y-1 flex-1 overflow-y-auto will-change-transform [transform:translateZ(0)]">
             {estado && <p>Estado: {estado}</p>}
             {raza && <p>Raza: {raza}</p>}
             {sexo && <p>Sexo: {sexo}</p>}
