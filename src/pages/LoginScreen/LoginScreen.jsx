@@ -93,10 +93,19 @@ const LoginScreen = ({ iniciarSesion, guardarUsuario }) => {
           transition={{ delay: 0.5, duration: 0.8, ease: "easeInOut" }}
         >
           <div className="flex flex-col items-center justify-center">
-            <h5 className="text-white text-3xl mt-2">¡Bienvenido!</h5>
+            <h5 className="text-white text-3xl mt-2">¡Hola!</h5>
             <p className="text-sm mt-4">
-              Perdidos y Adopciones requiere que inicie sesión para que su
-              navegación sea segura.
+              Este espacio nace para organizar, en un solo lugar, la información
+              sobre animales perdidos, encontrados y en adopción en Tucumán,
+              Argentina.
+            </p>
+            <p className="text-sm mt-4">
+              Así, toda la comunidad puede ayudar de manera más sencilla, rápida
+              y confiable.
+            </p>
+            <p className="text-sm mt-4">
+              Con tu registro e inicio de sesión ayudás a mantener la base de
+              datos ordenada y segura.
             </p>
           </div>
 

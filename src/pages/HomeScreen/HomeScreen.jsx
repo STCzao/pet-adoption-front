@@ -8,6 +8,7 @@ import { publicacionesService } from "../../services/publicaciones";
 import { useEffect, useState } from "react";
 import Img_home from "../../assets/Img_home.png";
 import Img_colab from "../../assets/Img_colab.png";
+import { div } from "framer-motion/client";
 
 const HomeScreen = () => {
   const [perdidos, setPerdidos] = useState([]);
@@ -54,11 +55,20 @@ const HomeScreen = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="border border-white/20 font-medium mt-10 flex flex-col justify-center p-4 sm:p-5 w-full sm:w-11/12 md:w-full text-base sm:text-lg md:text-xl rounded-lg bg-white/20 mb-8 text-center"
+            className="border italic border-white/20 gap-10 font-medium mt-10 flex flex-col p-4 sm:p-5 w-full sm:w-11/12 md:w-full text-base sm:text-lg md:text-xl rounded-lg bg-white/20 mb-8 text-center"
           >
-            Miles de perritos caminan sin rumbo o abandonados. En Perdidos y
-            Adopciones buscamos devolverles lo que más necesitan: un hogar lleno
-            de amor.
+            “Amar y ser amable con los animales nos acerca a nuestra verdadera
+            naturaleza humana.”
+            <span className="text-sm">Dalai Lama</span>
+          </motion.p>
+        </div>
+        <div className="flex flex-col justify-center items-center text-white/90 max-w-4xl mb-10">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            Desde acá podés elegir qué tipo de consulta o aviso querés hacer:
           </motion.p>
         </div>
         <div className="mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
@@ -73,7 +83,7 @@ const HomeScreen = () => {
               window.scrollTo(0, 0);
             }}
           >
-            Consultar perdidos
+            Perdidos
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 10 }}
@@ -85,7 +95,7 @@ const HomeScreen = () => {
               window.scrollTo(0, 0);
             }}
           >
-            Consultar encontrados
+            Encontrados
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 10 }}
@@ -97,7 +107,7 @@ const HomeScreen = () => {
               window.scrollTo(0, 0);
             }}
           >
-            Consultar adopciones
+            Adopciones
           </motion.button>
         </div>
       </div>
@@ -140,7 +150,7 @@ const HomeScreen = () => {
 
         {encontrados.length > 0 ? (
           <>
-            <div className=" grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-4 w-full max-w-[1280px] mx-auto">
+            <div className=" grid gap-6 grid-cols-1 justify-items-center sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 flex items-center 2xl:grid-cols-4 px-4 w-full mx-auto">
               {encontrados.map((pub) => (
                 <CardGenerica key={pub._id} publicacion={pub} />
               ))}

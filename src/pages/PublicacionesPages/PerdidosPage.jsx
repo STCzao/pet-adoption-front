@@ -65,18 +65,20 @@ const PerdidosPage = () => {
             </div>
 
             {/* Publicaciones */}
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-15">
+            <div className="flex-1 grid grid-cols-1 justify-items-center sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-15">
               {loading ? (
                 <div className="flex justify-center items-center col-span-full p-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF7857]"></div>
                 </div>
               ) : publicacionesFiltradas.length > 0 ? (
                 publicacionesFiltradas.map((pub) => (
-                  <CardGenerica key={pub._id} publicacion={pub} />
+                  <div>
+                    <CardGenerica key={pub._id} publicacion={pub} />
+                  </div>
                 ))
               ) : (
                 <div className="col-span-full flex justify-center text-center items-center text-black text-2xl font-medium mt-10">
-                  No se encontraron coincidencias
+                  No se encontraron resultados
                 </div>
               )}
             </div>

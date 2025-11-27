@@ -5,7 +5,7 @@ const CardFiltro = ({ filtros, setFiltros }) => {
   };
 
   return (
-    <div className="bg-[#763A0D]/70 backdrop-blur border border-white/20 rounded-xl shadow-md p-4 text-white font-medium flex flex-col gap-4">
+    <div className="bg-[#763A0D]/70 backdrop-blur max-w-[200px] border border-white/20 rounded-xl shadow-md p-2 text-white font-medium flex flex-col">
       <h3 className="text-lg font-bold mb-2">Filtros</h3>
 
       {/* Raza (texto libre) */}

@@ -145,7 +145,7 @@ export const SidebarOpciones = () => {
               onClick={() => CrearComunidad.openModal()}
               className="border border-[#FF7857]/50 font-medium w-full h-11 rounded-full text-white bg-[#FF7857]/20 hover:bg-[#FF7857] transition-opacity"
             >
-              Crear caso comunitario
+              Crear caso para ayuda
             </button>
             <button
               onClick={() => AdminPublicaciones.openModal()}
@@ -164,7 +164,7 @@ export const SidebarOpciones = () => {
               onClick={() => VerComunidad.openModal()}
               className="border border-[#FF7857]/50 font-medium w-full h-11 rounded-full text-white bg-[#FF7857]/20 hover:bg-[#FF7857] transition-opacity"
             >
-              Todos los casos comunitarios
+              Todos los casos para ayuda
             </button>
           </div>
         )}

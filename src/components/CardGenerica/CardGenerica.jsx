@@ -47,6 +47,13 @@ const CardGenerica = ({ publicacion }) => {
       >
         {/* Frente */}
         <div className="absolute w-full h-full [backface-visibility:hidden] flex flex-col bg-[#000000] backdrop-blur border border-white/20 rounded-xl shadow-md p-3">
+          <div>
+            {tipo && (
+              <span className="flex flex-col italic text-center bg-green-500/20 text-green-300 mb-2 px-2 py-1 rounded text-sm mt-2">
+                Tipo: {tipo}
+              </span>
+            )}
+          </div>
           {img && (
             <img
               src={img}
@@ -57,22 +64,18 @@ const CardGenerica = ({ publicacion }) => {
           <h3 className="font-bold text-white text-l mb-1">
             {titulo || "Sin título"}
           </h3>
-          <div>
-            {estado && (
-              <span className="bg-green-500/20 text-green-300 px-2 py-1 rounded text-sm mt-2">
-                Estado: {estado}
-              </span>
+          <div className="flex flex-col text-center text-white mb-2 rounded text-sm">
+            {(tipo === "PERDIDO" || tipo === "ENCONTRADO") && (
+              <>{lugar && <p className="mt-2">Lugar: {lugar}</p>}</>
             )}
           </div>
-
-          <div className="text-xs text-white/90 space-y-1 flex-1 overflow-auto mt-2">
-            {tipo && <p>Tipo: {tipo}</p>}
+          <div className="text-xs text-white/90 space-y-1 flex-1 overflow-auto">
+            {estado && <p>Estado: {estado}</p>}
             {raza && <p>Raza: {raza}</p>}
             {sexo && <p>Sexo: {sexo}</p>}
             {tamaño && <p>Tamaño: {tamaño}</p>}
             {color && <p>Color: {color}</p>}
             {edad && <p>Edad: {edad}</p>}
-            {detalles && <p>Detalles: {detalles}</p>}
           </div>
           <p className="text-center bg-white/20 text-white px-2 py-1 rounded text-l mt-2">
             Ver más detalles (click para girar)
@@ -85,7 +88,6 @@ const CardGenerica = ({ publicacion }) => {
             {descripcion && <p>Descripción: {descripcion}</p>}
             {(tipo === "PERDIDO" || tipo === "ENCONTRADO") && (
               <>
-                {lugar && <p className="mt-2">Lugar: {lugar}</p>}
                 {fecha && <p className="mt-2">Fecha: {formatFecha(fecha)}</p>}
               </>
             )}
@@ -97,6 +99,11 @@ const CardGenerica = ({ publicacion }) => {
               </>
             )}
             {detalles && <p className="mt-2">Detalles: {detalles}</p>}
+          </div>
+          <div>
+            <p className="text-center bg-white/20 text-white px-2 py-1 rounded text-l mt-2">
+              Click para volver
+            </p>
           </div>
           {whatsappLink && (
             <a
