@@ -204,45 +204,98 @@ export const CrearPublicacion = {
       let valid = true;
       let newErrors = {};
 
-      // VALIDACIONES GENERALES
+      // Valid titulo
       if (!form.titulo.trim()) {
         newErrors.titulo = "El título es obligatorio";
         valid = false;
+      } else if (form.titulo.trim().length < 9) {
+        newErrors.titulo = "El título debe tener al menos 10 caracteres";
+        valid = false;
+      } else if (form.titulo.trim().length > 61) {
+        newErrors.titulo = "El título no puede contener más de 60 caracteres";
+        valid = false;
+      } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(form.titulo.trim())) {
+        newErrors.titulo = "El nombre solo puede contener letras y espacios";
+        valid = false;
       }
+
+      //Valid descripcion
       if (!form.descripcion.trim()) {
         newErrors.descripcion = "La descripción es obligatoria";
         valid = false;
+      } else if (form.descripcion.trim().length < 9) {
+        newErrors.descripcion = "El título debe tener al menos 10 caracteres";
+        valid = false;
+      } else if (form.descripcion.trim().length > 301) {
+        newErrors.descripcion =
+          "El título no puede contener más de 300 caracteres";
+        valid = false;
       }
+
+      //Valid tipo
       if (!form.tipo) {
         newErrors.tipo = "El tipo de publicación es obligatorio";
         valid = false;
       }
+
+      //Valid raza
       if (!form.raza.trim()) {
         newErrors.raza = "La raza es obligatoria";
         valid = false;
+      } else if (form.raza.trim()) {
+        newErrors.raza = "La raza no puede contener más de 30 caracteres";
+        valid = false;
       }
+
+      //Valid sexo
       if (!form.sexo) {
         newErrors.sexo = "El sexo es obligatorio";
         valid = false;
       }
+
+      //Valid tamaño
       if (!form.tamaño) {
         newErrors.tamaño = "El tamaño es obligatorio";
         valid = false;
       }
+
+      //Valid color
       if (!form.color.trim()) {
         newErrors.color = "El color es obligatorio";
         valid = false;
+      } else if (form.color.trim().length > 21) {
+        newErrors.color = "El color no puede contener más de 20 caracteres";
+        valid = false;
       }
+
+      //Valid edad
       if (!form.edad.trim()) {
         newErrors.edad = "La edad es obligatoria";
         valid = false;
       }
+
+      // Validacion WhatsApp
       if (!form.whatsapp.trim()) {
         newErrors.whatsapp = "El WhatsApp es obligatorio";
         valid = false;
+      } else if (!/^\+?[0-9\s\-()]{10,15}$/.test(form.whatsapp)) {
+        newErrors.whatsapp = "El formato de WhatsApp no es válido";
+        valid = false;
+      } else if (form.whatsapp.length > 16) {
+        newErrors.whatsapp = "El WhatsApp no puede tener mas de 15 caracteres";
+        valid = false;
       }
+
+      // Validacion Imagen
       if (!form.img.trim()) {
         newErrors.img = "La imagen es obligatoria";
+        valid = false;
+      } else if (
+        !/^https:\/\/res\.cloudinary\.com\/.+\/.+\.(jpg|jpeg|png|webp)$/.test(
+          form.img
+        )
+      ) {
+        newErrors.img = "La URL de imagen no es válida";
         valid = false;
       }
 
@@ -251,10 +304,26 @@ export const CrearPublicacion = {
         if (!form.lugar.trim()) {
           newErrors.lugar = "El lugar es obligatorio";
           valid = false;
+        } else if (form.lugar.trim().length > 51) {
+          newErrors.lugar = "El lugar no puede contener más de 50 caracteres";
+          valid = false;
         }
+
         if (!form.fecha.trim()) {
           newErrors.fecha = "La fecha es obligatoria";
           valid = false;
+        } else {
+          const fechaIngresada = new Date(form.fecha);
+          const hoy = new Date();
+
+          // Normalizar
+          fechaIngresada.setHours(0, 0, 0, 0);
+          hoy.setHours(0, 0, 0, 0);
+
+          if (fechaIngresada > hoy) {
+            newErrors.fecha = "La fecha no puede ser mayor al dia actual";
+            valid = false;
+          }
         }
       }
 
@@ -348,19 +417,17 @@ export const CrearPublicacion = {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center text-white/90 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          className=" flex flex-col items-center text-white/90 w-full max-w-2xl max-h-[90vh]"
         >
           <motion.form
             onSubmit={handleSubmit}
-            className=" max-w-2xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            className="max-w-6xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm flex flex-col max-h-[90vh]"
           >
-            <div className="sticky top-0 z-50 bg-[#000000]/90 backdrop-blur-sm py-4 rounded-xl border border-white/20">
+            {/* ENCABEZADO FIJO DEL FORMULARIO */}
+            <div className="flex-shrink-0 relative w-full">
               <button
                 onClick={handleClose}
-                className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
+                className="absolute right-1 text-white hover:text-[#FF7857] transition-colors"
                 disabled={submitting}
               >
                 <svg
@@ -373,8 +440,9 @@ export const CrearPublicacion = {
                   strokeLinejoin="round"
                   className="w-5 h-5"
                 >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
+                  {" "}
+                  <line x1="18" y1="6" x2="6" y2="18" />{" "}
+                  <line x1="6" y1="6" x2="18" y2="18" />{" "}
                 </svg>
               </button>
 
@@ -390,11 +458,7 @@ export const CrearPublicacion = {
               </div>
             </div>
 
-            {loading ? (
-              <div className="flex justify-center items-center p-8">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#FF7857]" />
-              </div>
-            ) : (
+            <div className="overflow-y-auto mt-4 space-y-4 pr-2">
               <>
                 {/* Tipo */}
                 <div className="mt-4">
@@ -668,7 +732,8 @@ export const CrearPublicacion = {
 
                   <div className="mt-4">
                     <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese la edad aproximada de la mascota (puede variar según la raza)
+                      Ingrese la edad aproximada de la mascota (puede variar
+                      según la raza)
                     </label>
                     <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                       <select
@@ -679,7 +744,9 @@ export const CrearPublicacion = {
                         className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                       >
                         <option value="">Edad *</option>
-                        <option value="CACHORRO">Cachorro (hasta 12 meses)</option>
+                        <option value="CACHORRO">
+                          Cachorro (hasta 12 meses)
+                        </option>
                         <option value="ADULTO">Adulto (1 a 7 años)</option>
                         <option value="MAYOR">Mayor (Más de 7 años)</option>
                       </select>
@@ -790,29 +857,26 @@ export const CrearPublicacion = {
                     </p>
                   )}
                 </div>
-
-                {/* Botón */}
-                <div className="col-span-2 flex justify-end mt-4">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
-                  >
-                    {submitting
-                      ? editData
-                        ? "Actualizando..."
-                        : "Creando..."
-                      : editData
-                      ? "Actualizar publicación"
-                      : "Crear publicación"}
-                  </button>
-                </div>
-
-                {result && (
-                  <p className="mt-2 text-white/80 text-sm">{result}</p>
-                )}
               </>
-            )}
+            </div>
+            {/* Botón */}
+            <div className="col-span-2 flex justify-end mt-4">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
+              >
+                {submitting
+                  ? editData
+                    ? "Actualizando..."
+                    : "Creando..."
+                  : editData
+                  ? "Actualizar publicación"
+                  : "Crear publicación"}
+              </button>
+            </div>
+
+            {result && <p className="mt-2 text-white/80 text-sm">{result}</p>}
           </motion.form>
         </motion.div>
       </div>

@@ -119,7 +119,7 @@ const HomeScreen = () => {
                 navigate("/perdidos");
                 window.scrollTo(0, 0);
               }}
-              className="mt-10 text-black border border-black font-medium w-50 h-11 rounded-full bg-white hover:bg-[#FF7857] transition-opacity"
+              className="mt-10 text-black border border-black cursor-pointer font-medium w-50 h-11 rounded-full bg-white/70 hover:bg-[#FF7857] transition-opacity"
             >
               Ver más publicaciones
             </button>
@@ -150,7 +150,7 @@ const HomeScreen = () => {
                 navigate("/encontrados");
                 window.scrollTo(0, 0);
               }}
-              className="mt-10 text-black border border-black font-medium w-50 h-11 rounded-full bg-white hover:bg-[#FF7857] transition-opacity"
+              className="mt-10 text-black border border-black cursor-pointer font-medium w-50 h-11 rounded-full bg-white/70 hover:bg-[#FF7857] transition-opacity"
             >
               Ver más publicaciones
             </button>
@@ -189,7 +189,7 @@ const HomeScreen = () => {
               navigate("/contacto");
               window.scrollTo(0, 0);
             }}
-            className="border border-white/20 font-medium w-52 h-11 rounded-full text-white bg-white/60 hover:bg-[#FF7857] transition-opacity"
+            className="border border-white/20 cursor-pointer font-medium w-52 h-11 rounded-full text-white bg-white/60 hover:bg-[#FF7857] transition-opacity"
           >
             Quiero ser colaborador
           </motion.button>
@@ -200,10 +200,9 @@ const HomeScreen = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="border border-white/20 font-medium rounded-lg bg-white/20 p-4 sm:p-5 text-base sm:text-lg md:text-xl text-left max-w-lg md:max-w-2xl leading-relaxed md:ml-8"
         >
-          Algunos cachorros nacieron sin un hogar y otros se perdieron en el
-          camino, pero todos esperan lo mismo: volver a sentir amor. Dales la
-          oportunidad de reencontrarse con una familia, de llenar tu vida de
-          alegría y la suya de esperanza.
+          Invitamos a los colaboradores a enviar sus consultas mediante el
+          formulario. A través de su mensaje podremos informarles sobre las
+          maneras participar en la iniciativa de perdidos y adopciones.
         </motion.p>
       </div>
       <Footer />

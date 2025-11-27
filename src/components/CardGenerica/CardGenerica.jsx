@@ -46,7 +46,7 @@ const CardGenerica = ({ publicacion }) => {
         }`}
       >
         {/* Frente */}
-        <div className="absolute w-full h-full [backface-visibility:hidden] flex flex-col bg-[#763A0D]/70 backdrop-blur border border-white/20 rounded-xl shadow-md p-3">
+        <div className="absolute w-full h-full [backface-visibility:hidden] flex flex-col bg-[#000000] backdrop-blur border border-white/20 rounded-xl shadow-md p-3">
           {img && (
             <img
               src={img}
@@ -80,7 +80,7 @@ const CardGenerica = ({ publicacion }) => {
         </div>
 
         {/* Reverso */}
-        <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col justify-between bg-[#763A0D]/70 backdrop-blur border border-white/20 rounded-xl shadow-md p-3">
+        <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col justify-between bg-[#000000] backdrop-blur border border-white/20 rounded-xl shadow-md p-3">
           <div className="text-xs text-white/90 overflow-auto flex-1">
             {descripcion && <p>Descripción: {descripcion}</p>}
             {(tipo === "PERDIDO" || tipo === "ENCONTRADO") && (
