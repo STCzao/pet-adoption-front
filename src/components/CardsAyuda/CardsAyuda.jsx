@@ -6,7 +6,7 @@ const CardsAyuda = ({ pub }) => {
       className="
         text-sm border border-white/20 flex flex-col gap-3
         p-4 sm:p-5 w-full max-w-[350px]
-        h-[420px]                  /* altura uniforme */
+        h-[480px]                  
         rounded-lg bg-white/20 text-center
         overflow-hidden
       "
@@ -20,7 +20,7 @@ const CardsAyuda = ({ pub }) => {
         {/* CATEGORIA */}
         {categoria && (
           <span className="bg-red-500/20 text-red-300 px-2 py-1 rounded text-sm mt-2">
-            Categoria: {categoria}
+            Categoría: {categoria}
           </span>
         )}
 
@@ -30,20 +30,22 @@ const CardsAyuda = ({ pub }) => {
             <img
               src={img}
               alt={titulo || "imagen de caso"}
-              className="w-full h-32 object-cover rounded-lg"
+              className="w-full h-50 object-cover rounded-lg"
             />
           </div>
         )}
 
-        {/* CONTENIDO (recortado para mantener altura) */}
-        <p className="text-xs text-white/90 mt-3 line-clamp-4">
-          Caso: {contenido}
-        </p>
+        {/* CONTENIDO SCROLLEABLE */}
+        <div className="flex-1 overflow-y-auto mt-3 mb-2 pr-1">
+          <p className="text-xs text-white/90 whitespace-pre-wrap">
+            {contenido}
+          </p>
+        </div>
 
-        {/* USUARIO (siempre abajo) */}
+        {/* USUARIO */}
         {usuario && (
           <p className="text-white/70 text-xs mt-auto">
-            Publicado por:{" "}
+            Creado por:{" "}
             {typeof usuario === "object" ? usuario.nombre : usuario}
           </p>
         )}

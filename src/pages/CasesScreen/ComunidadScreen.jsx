@@ -1,28 +1,15 @@
 import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import { useEffect, useState } from "react";
-import { comunidadService } from "../../services/comunidad";
+import { useComunidad } from "../../services/Hooks/useComunidad";
+import { useFiltro } from "../../services/Hooks/useFiltro";
 import CardsAyuda from "../../components/CardsAyuda/CardsAyuda";
 import Img_Casos from "../../assets/Img_Casos.jpg";
+import CasoAyudaFiltro from "../../components/CasoAyudaFiltro/CasoAyudaFiltro";
 
 const ComunidadScreen = () => {
-  const [casos, setCasos] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const cargar = async () => {
-      const resp = await comunidadService.obtenerComunidad();
-
-      if (resp?.success && Array.isArray(resp.comunidades)) {
-        setCasos(resp.comunidades);
-      }
-
-      setLoading(false);
-    };
-
-    cargar();
-  }, []);
+  const { casos, loading, error } = useComunidad();
+  const { filtrados, query, setQuery } = useFiltro(casos);
 
   return (
     <div className="overflow-x-hidden">
@@ -37,13 +24,20 @@ const ComunidadScreen = () => {
         }}
       >
         <div className="flex flex-col w-full max-w-5xl text-center text-white/90 mt-20">
-          <motion.p className="text-3xl mb-6">Comunidad</motion.p>
+          <motion.p className="text-3xl mb-6">Casos para ayuda</motion.p>
 
           <motion.p className="text-lg mb-12">
-            Aqui podras encontrar historias, consejos y experiencias compartidas
-            por nuestra comunidad.
+            Aquí podrás encontrar historias, consejos, experiencias y alertas
+            compartidas por nuestra comunidad.
           </motion.p>
+
+          {/* Filtro completamente desacoplado */}
+          <div className="mb-10">
+            <CasoAyudaFiltro value={query} onChange={setQuery} />
+          </div>
         </div>
+
+        {/* Resultado */}
         <motion.div
           className="
             w-full 
@@ -56,17 +50,28 @@ const ComunidadScreen = () => {
             place-items-center
           "
         >
-          {loading ? (
+          {loading && (
             <div className="flex justify-center items-center col-span-full p-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF7857]"></div>
             </div>
-          ) : casos.length > 0 ? (
-            casos.map((pub) => <CardsAyuda key={pub._id} pub={pub} />)
-          ) : (
+          )}
+
+          {error && (
+            <p className="text-red-400 text-center col-span-full">
+              Ocurrio un error al cargar los casos.
+            </p>
+          )}
+
+          {!loading && !error && filtrados.length === 0 && (
             <p className="text-white text-center text-2xl col-span-full mt-10">
               No hay casos disponibles
             </p>
           )}
+
+          {!loading &&
+            !error &&
+            filtrados.length > 0 &&
+            filtrados.map((pub) => <CardsAyuda key={pub._id} pub={pub} />)}
         </motion.div>
       </div>
 

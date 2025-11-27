@@ -59,8 +59,8 @@ const NavbarContent = () => {
       ],
     },
     {
-      name: "Comunidad",
-      path: "/comunidad",
+      name: "Casos para ayuda",
+      path: "/casos-ayuda",
     },
   ];
 

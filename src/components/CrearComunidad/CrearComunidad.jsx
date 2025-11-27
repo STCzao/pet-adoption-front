@@ -142,16 +142,23 @@ export const CrearComunidad = {
       if (!form.titulo.trim()) {
         newErrors.titulo = "El titulo es obligatorio";
         valid = false;
-      } else if (form.titulo.trim().length < 5) {
-        newErrors.titulo = "El titulo debe tener al menos 5 caracteres";
+      } else if (form.titulo.trim().length < 9) {
+        newErrors.titulo = "El titulo debe tener al menos 10 caracteres";
+        valid = false;
+      } else if (form.titulo.trim().length > 81) {
+        newErrors.titulo = "El titulo no puede contener más de 80 caracteres";
         valid = false;
       }
 
       if (!form.contenido.trim()) {
         newErrors.contenido = "El contenido es obligatorio";
         valid = false;
-      } else if (form.contenido.trim().length < 20) {
+      } else if (form.contenido.trim().length < 19) {
         newErrors.contenido = "El contenido debe tener al menos 20 caracteres";
+        valid = false;
+      } else if (form.contenido.trim().length > 3001) {
+        newErrors.contenido =
+          "El contenido no puede contener más de 3000 caracteres";
         valid = false;
       }
 
@@ -162,6 +169,13 @@ export const CrearComunidad = {
 
       if (!form.img.trim()) {
         newErrors.img = "La imagen es obligatoria";
+        valid = false;
+      } else if (
+        !/^https:\/\/res\.cloudinary\.com\/.+\/.+\.(jpg|jpeg|png|webp)$/.test(
+          form.img
+        )
+      ) {
+        newErrors.img = "La URL de imagen no es válida";
         valid = false;
       }
 
@@ -255,9 +269,7 @@ export const CrearComunidad = {
 
               <div className="flex flex-col items-center justify-center">
                 <h1 className="text-white text-3xl mt-2 font-medium">
-                  {isEditing
-                    ? "Editar caso comunitario"
-                    : "Crear caso comunitario"}
+                  {isEditing ? "Editar caso de ayuda" : "Crear caso de ayuda"}
                 </h1>
                 <p className="text-white/80 text-sm mt-1">
                   {isEditing ? "Modifique el contenido" : "Complete los datos"}
@@ -357,7 +369,7 @@ export const CrearComunidad = {
                       disabled={submitting}
                       className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
                     >
-                      <option value="INFORMACION">Informacion</option>
+                      <option value="INFORMACION">Información</option>
                       <option value="CONSEJO">Consejo</option>
                       <option value="HISTORIA">Historia</option>
                       <option value="ALERTA">Alerta</option>

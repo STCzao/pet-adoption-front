@@ -188,7 +188,7 @@ function App() {
             />
 
             <Route
-              path="/comunidad"
+              path="/casos-ayuda"
               element={
                 <ProtectedRoutes login={login}>
                   <CasosAyudaScreen user={user} />

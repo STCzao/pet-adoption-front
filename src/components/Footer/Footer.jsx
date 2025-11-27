@@ -71,6 +71,17 @@ export default function Footer() {
                   Adopciones
                 </a>
               </li>
+              <li>
+                <a
+                  onClick={() => {
+                    navigate("/casos-ayuda");
+                    window.scrollTo(0, 0);
+                  }}
+                  className="hover:underline hover:text-black transition cursor-pointer"
+                >
+                  Casos para ayuda
+                </a>
+              </li>
             </ul>
           </div>
 
