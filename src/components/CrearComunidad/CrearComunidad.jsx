@@ -235,173 +235,160 @@ export const CrearComunidad = {
     return (
       <div className="fixed font-medium inset-0 z-[200] flex items-center justify-center bg-black/50">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center text-white/90 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          className="flex flex-col items-center text-white/90 w-full max-w-2xl max-h-[90vh]"
         >
-          <motion.form
+          <form
             onSubmit={handleSubmit}
-            className="max-w-2xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            className="max-w-6xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm max-h-[90vh]"
           >
-            <div className="sticky top-0 z-50 bg-[#000000]/90 backdrop-blur-sm py-4 rounded-xl border border-white/20">
-              <button
-                onClick={handleClose}
-                className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
-                disabled={submitting}
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 text-white hover:text-[#FF7857] transition-colors"
+              disabled={submitting}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
 
-              <div className="flex flex-col items-center justify-center">
-                <h1 className="text-white text-3xl mt-2 font-medium">
-                  {isEditing ? "Editar caso de ayuda" : "Crear caso de ayuda"}
-                </h1>
-                <p className="text-white/80 text-sm mt-1">
-                  {isEditing ? "Modifique el contenido" : "Complete los datos"}
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center">
+              <h1 className="text-white text-3xl mt-2 font-medium">
+                {isEditing ? "Editar caso de ayuda" : "Crear caso de ayuda"}
+              </h1>
+              <p className="text-white/80 text-sm mt-1">
+                {isEditing ? "Modifique el contenido" : "Complete los datos"}
+              </p>
             </div>
 
-            {loading ? (
-              <div className="flex justify-center items-center p-8">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#FF7857]" />
-              </div>
-            ) : (
-              <>
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Seleccione una imagen
-                  </label>
-                  <div className="flex items-center justify-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden gap-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading || submitting}
-                      className="bg-transparent text-gray-500 outline-none text-sm w-full file:h-10 file:ml-2 file:p-3 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF7857] file:text-white hover:file:bg-[#E5674F] text-center"
-                    />
-                  </div>
-                  {errors.img && (
-                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.img}
-                    </p>
-                  )}
-
-                  {form.img && (
-                    <div className="mt-2 flex justify-center">
-                      <img
-                        src={form.img}
-                        alt="Vista previa"
-                        className="w-40 h-40 object-cover rounded-2xl border border-white/50"
-                      />
-                    </div>
-                  )}
+            <div className="overflow-y-auto mt-4 space-y-4 max-h-[70vh]">
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Seleccione una imagen
+                </label>
+                <div className="flex items-center justify-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading || submitting}
+                    className="bg-transparent text-gray-500 outline-none text-sm w-full file:h-10 file:ml-2 file:p-3 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF7857] file:text-white hover:file:bg-[#E5674F] text-center"
+                  />
                 </div>
-
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Ingrese el titulo
-                  </label>
-                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <input
-                      type="text"
-                      name="titulo"
-                      placeholder="Titulo *"
-                      value={form.titulo}
-                      onChange={handleChange}
-                      disabled={submitting}
-                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                    />
-                  </div>
-                  {errors.titulo && (
-                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.titulo}
-                    </p>
-                  )}
-                </div>
-
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Ingrese el contenido
-                  </label>
-                  <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
-                    <textarea
-                      name="contenido"
-                      placeholder="Contenido *"
-                      value={form.contenido}
-                      onChange={handleChange}
-                      disabled={submitting}
-                      rows="6"
-                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
-                    />
-                  </div>
-                  {errors.contenido && (
-                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.contenido}
-                    </p>
-                  )}
-                </div>
-
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Seleccione la categoria
-                  </label>
-                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <select
-                      name="categoria"
-                      value={form.categoria}
-                      onChange={handleChange}
-                      disabled={submitting}
-                      className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-                    >
-                      <option value="INFORMACION">Información</option>
-                      <option value="CONSEJO">Consejo</option>
-                      <option value="HISTORIA">Historia</option>
-                      <option value="ALERTA">Alerta</option>
-                    </select>
-                  </div>
-                  {errors.categoria && (
-                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.categoria}
-                    </p>
-                  )}
-                </div>
-
-                <div className="col-span-2 flex justify-end mt-4">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
-                  >
-                    {submitting
-                      ? isEditing
-                      : isEditing
-                      ? "Actualizar caso"
-                      : "Crear caso"}
-                  </button>
-                </div>
-
-                {result && (
-                  <p className="mt-2 text-white/80 text-sm">{result}</p>
+                {errors.img && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.img}
+                  </p>
                 )}
-              </>
-            )}
-          </motion.form>
+
+                {form.img && (
+                  <div className="mt-2 flex justify-center">
+                    <img
+                      src={form.img}
+                      alt="Vista previa"
+                      className="w-40 h-40 object-cover rounded-2xl border border-white/50"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Ingrese el titulo
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <input
+                    type="text"
+                    name="titulo"
+                    placeholder="Titulo *"
+                    value={form.titulo}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                  />
+                </div>
+                {errors.titulo && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.titulo}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Ingrese el contenido
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
+                  <textarea
+                    name="contenido"
+                    placeholder="Contenido *"
+                    value={form.contenido}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    rows="10"
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
+                  />
+                </div>
+                {errors.contenido && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.contenido}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Seleccione la categoria
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <select
+                    name="categoria"
+                    value={form.categoria}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                  >
+                    <option value="INFORMACION">Información</option>
+                    <option value="CONSEJO">Consejo</option>
+                    <option value="HISTORIA">Historia</option>
+                    <option value="ALERTA">Alerta</option>
+                  </select>
+                </div>
+                {errors.categoria && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.categoria}
+                  </p>
+                )}
+              </div>
+
+              <div className="col-span-2 flex justify-end mt-4">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-6 py-2 rounded-full text-white bg-white/20 border border-white/70 hover:bg-[#FF7857] transition-colors disabled:opacity-50"
+                >
+                  {submitting
+                    ? isEditing
+                    : isEditing
+                    ? "Actualizar caso"
+                    : "Crear caso"}
+                </button>
+              </div>
+
+              {result && <p className="mt-2 text-white/80 text-sm">{result}</p>}
+            </div>
+          </form>
         </motion.div>
       </div>
     );

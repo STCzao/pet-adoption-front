@@ -419,445 +419,440 @@ export const CrearPublicacion = {
           animate={{ opacity: 1, scale: 1 }}
           className=" flex flex-col items-center text-white/90 w-full max-w-2xl max-h-[90vh]"
         >
-          <motion.form
+          <form
             onSubmit={handleSubmit}
             className="max-w-6xl w-full text-center border border-white/70 rounded-2xl px-8 py-6 shadow-lg bg-white/10 backdrop-blur-sm flex flex-col max-h-[90vh]"
           >
-            {/* ENCABEZADO FIJO DEL FORMULARIO */}
-            <div className="flex-shrink-0 relative w-full">
-              <button
-                onClick={handleClose}
-                className="absolute right-1 text-white hover:text-[#FF7857] transition-colors"
-                disabled={submitting}
+            <button
+              onClick={handleClose}
+              className="absolute right-4 top-4 text-white hover:text-[#FF7857] transition-colors"
+              disabled={submitting}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5"
-                >
-                  {" "}
-                  <line x1="18" y1="6" x2="6" y2="18" />{" "}
-                  <line x1="6" y1="6" x2="18" y2="18" />{" "}
-                </svg>
-              </button>
+                {" "}
+                <line x1="18" y1="6" x2="6" y2="18" />{" "}
+                <line x1="6" y1="6" x2="18" y2="18" />{" "}
+              </svg>
+            </button>
 
-              <div className="flex flex-col items-center justify-center">
-                <h1 className="text-white text-3xl mt-2 font-medium">
-                  {isEditing ? "Editar publicación" : "Crear publicación"}
-                </h1>
-                <p className="text-white/80 text-sm mt-1">
-                  {isEditing
-                    ? "Modifique los datos de la mascota"
-                    : "Complete los datos de la mascota"}
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center">
+              <h1 className="text-white text-3xl mt-2 font-medium">
+                {isEditing ? "Editar publicación" : "Crear publicación"}
+              </h1>
+              <p className="text-white/80 text-sm mt-1">
+                {isEditing
+                  ? "Modifique los datos de la mascota"
+                  : "Complete los datos de la mascota"}
+              </p>
             </div>
 
             <div className="overflow-y-auto mt-4 space-y-4 pr-2">
-              <>
-                {/* Tipo */}
+              {/* Tipo */}
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Seleccione el tipo de publicación
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <select
+                    name="tipo"
+                    value={form.tipo}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                  >
+                    <option value="">Tipo de Publicación *</option>
+                    <option value="PERDIDO">Perdido</option>
+                    <option value="ENCONTRADO">Encontrado</option>
+                    <option value="ADOPCION">Adopción</option>
+                  </select>
+                </div>
+                {errors.tipo && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.tipo}
+                  </p>
+                )}
+              </div>
+
+              {/* Imagen */}
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Seleccione una imagen
+                </label>
+                <div className="flex items-center justify-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading || submitting}
+                    className="bg-transparent text-gray-500 outline-none text-sm w-full file:h-10 file:ml-2 file:p-3 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF7857] file:text-white hover:file:bg-[#E5674F] text-center"
+                  />
+                </div>
+                {errors.img && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.img}
+                  </p>
+                )}
+
+                {form.img && (
+                  <div className="mt-2 flex justify-center">
+                    <img
+                      src={form.img}
+                      alt="Vista previa"
+                      className="w-32 h-32 object-cover rounded-2xl border border-white/50"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Título */}
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Ingrese el título de la publicación
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <input
+                    type="text"
+                    name="titulo"
+                    placeholder="Título *"
+                    value={form.titulo}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                  />
+                </div>
+                {errors.titulo && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.titulo}
+                  </p>
+                )}
+              </div>
+
+              {/* Descripción */}
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Ingrese una descripción de la mascota
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
+                  <textarea
+                    name="descripcion"
+                    placeholder="Descripción *"
+                    value={form.descripcion}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    rows="3"
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
+                  />
+                </div>
+                {errors.descripcion && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.descripcion}
+                  </p>
+                )}
+              </div>
+
+              {/* WhatsApp */}
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Ingrese su número de teléfono
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <input
+                    type="text"
+                    name="whatsapp"
+                    placeholder="WhatsApp de Contacto *"
+                    value={form.whatsapp}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                  />
+                </div>
+                {errors.whatsapp && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.whatsapp}
+                  </p>
+                )}
+              </div>
+
+              {/* Campos PERDIDO/ENCONTRADO */}
+              {(form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") && (
+                <>
+                  <div className="mt-4">
+                    <label className="flex items-left text-sm mb-1 ml-2">
+                      Describa el lugar donde perdió/encontró a la mascota
+                    </label>
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <input
+                        type="text"
+                        name="lugar"
+                        placeholder="Lugar *"
+                        value={form.lugar}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                      />
+                    </div>
+                    {errors.lugar && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.lugar}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="flex items-left text-sm mb-1 ml-2">
+                      Ingrese la fecha en que perdió/encontró a la mascota
+                    </label>
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <input
+                        type="date"
+                        name="fecha"
+                        value={form.fecha}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent pr-8 text-gray-500 outline-none text-sm w-full h-full"
+                      />
+                    </div>
+                    {errors.fecha && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.fecha}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Raza, Color, Sexo, Tamaño, Edad */}
+              <div className="flex flex-col">
                 <div className="mt-4">
                   <label className="flex items-left text-sm mb-1 ml-2">
-                    Seleccione el tipo de publicación
+                    Ingrese la raza de la mascota
+                  </label>
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                    <input
+                      type="text"
+                      name="raza"
+                      placeholder="Raza *"
+                      value={form.raza}
+                      onChange={handleChange}
+                      disabled={submitting}
+                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                    />
+                  </div>
+                  {errors.raza && (
+                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                      {errors.raza}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-4">
+                  <label className="flex items-left text-sm mb-1 ml-2">
+                    Ingrese el color de la mascota
+                  </label>
+                  <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                    <input
+                      type="text"
+                      name="color"
+                      placeholder="Color *"
+                      value={form.color}
+                      onChange={handleChange}
+                      disabled={submitting}
+                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                    />
+                  </div>
+                  {errors.color && (
+                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                      {errors.color}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-4">
+                  <label className="flex items-left text-sm mb-1 ml-2">
+                    Ingrese el sexo la mascota
                   </label>
                   <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                     <select
-                      name="tipo"
-                      value={form.tipo}
+                      name="sexo"
+                      value={form.sexo}
                       onChange={handleChange}
                       disabled={submitting}
-                      className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
+                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     >
-                      <option value="">Tipo de Publicación *</option>
-                      <option value="PERDIDO">Perdido</option>
-                      <option value="ENCONTRADO">Encontrado</option>
-                      <option value="ADOPCION">Adopción</option>
+                      <option value="">Sexo *</option>
+                      <option value="MACHO">Macho</option>
+                      <option value="HEMBRA">Hembra</option>
                     </select>
                   </div>
-                  {errors.tipo && (
+                  {errors.sexo && (
                     <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.tipo}
+                      {errors.sexo}
                     </p>
                   )}
                 </div>
 
-                {/* Imagen */}
                 <div className="mt-4">
                   <label className="flex items-left text-sm mb-1 ml-2">
-                    Seleccione una imagen
-                  </label>
-                  <div className="flex items-center justify-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden gap-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading || submitting}
-                      className="bg-transparent text-gray-500 outline-none text-sm w-full file:h-10 file:ml-2 file:p-3 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF7857] file:text-white hover:file:bg-[#E5674F] text-center"
-                    />
-                  </div>
-                  {errors.img && (
-                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.img}
-                    </p>
-                  )}
-
-                  {form.img && (
-                    <div className="mt-2 flex justify-center">
-                      <img
-                        src={form.img}
-                        alt="Vista previa"
-                        className="w-32 h-32 object-cover rounded-2xl border border-white/50"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Título */}
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Ingrese el título de la publicación
+                    Ingrese el tamaño aproximado de la mascota
                   </label>
                   <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <input
-                      type="text"
-                      name="titulo"
-                      placeholder="Título *"
-                      value={form.titulo}
+                    <select
+                      name="tamaño"
+                      value={form.tamaño}
                       onChange={handleChange}
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                    />
+                    >
+                      <option value="">Tamaño *</option>
+                      <option value="MINI">Mini</option>
+                      <option value="PEQUEÑO">Pequeño</option>
+                      <option value="MEDIANO">Mediano</option>
+                      <option value="GRANDE">Grande</option>
+                    </select>
                   </div>
-                  {errors.titulo && (
+                  {errors.tamaño && (
                     <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.titulo}
+                      {errors.tamaño}
                     </p>
                   )}
                 </div>
 
-                {/* Descripción */}
                 <div className="mt-4">
                   <label className="flex items-left text-sm mb-1 ml-2">
-                    Ingrese una descripción de la mascota
-                  </label>
-                  <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
-                    <textarea
-                      name="descripcion"
-                      placeholder="Descripción *"
-                      value={form.descripcion}
-                      onChange={handleChange}
-                      disabled={submitting}
-                      rows="3"
-                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
-                    />
-                  </div>
-                  {errors.descripcion && (
-                    <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.descripcion}
-                    </p>
-                  )}
-                </div>
-
-                {/* WhatsApp */}
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Ingrese su número de teléfono
+                    Ingrese la edad aproximada de la mascota (puede variar según
+                    la raza)
                   </label>
                   <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <input
-                      type="text"
-                      name="whatsapp"
-                      placeholder="WhatsApp de Contacto *"
-                      value={form.whatsapp}
+                    <select
+                      name="edad"
+                      value={form.edad}
                       onChange={handleChange}
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                    />
+                    >
+                      <option value="">Edad *</option>
+                      <option value="CACHORRO">
+                        Cachorro (hasta 12 meses)
+                      </option>
+                      <option value="ADULTO">Adulto (1 a 7 años)</option>
+                      <option value="MAYOR">Mayor (Más de 7 años)</option>
+                    </select>
                   </div>
-                  {errors.whatsapp && (
+                  {errors.edad && (
                     <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.whatsapp}
+                      {errors.edad}
                     </p>
                   )}
                 </div>
+              </div>
 
-                {/* Campos PERDIDO/ENCONTRADO */}
-                {(form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") && (
-                  <>
-                    <div className="mt-4">
-                      <label className="flex items-left text-sm mb-1 ml-2">
-                        Describa el lugar donde perdió/encontró a la mascota
-                      </label>
-                      <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                        <input
-                          type="text"
-                          name="lugar"
-                          placeholder="Lugar *"
-                          value={form.lugar}
-                          onChange={handleChange}
-                          disabled={submitting}
-                          className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
-                        />
-                      </div>
-                      {errors.lugar && (
-                        <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                          {errors.lugar}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mt-4">
-                      <label className="flex items-left text-sm mb-1 ml-2">
-                        Ingrese la fecha en que perdió/encontró a la mascota
-                      </label>
-                      <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                        <input
-                          type="date"
-                          name="fecha"
-                          value={form.fecha}
-                          onChange={handleChange}
-                          disabled={submitting}
-                          className="bg-transparent pr-8 text-gray-500 outline-none text-sm w-full h-full"
-                        />
-                      </div>
-                      {errors.fecha && (
-                        <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                          {errors.fecha}
-                        </p>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {/* Raza, Color, Sexo, Tamaño, Edad */}
-                <div className="flex flex-col">
+              {/* ADOPCION */}
+              {form.tipo === "ADOPCION" && (
+                <>
                   <div className="mt-4">
                     <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese la raza de la mascota
+                      Seleccione la afinidad con niños
                     </label>
                     <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <select
+                        name="afinidad"
+                        placeholder="Afinidad con niños *"
+                        value={form.afinidad}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                      >
+                        <option value="">Afinidad *</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="BAJA">Baja</option>
+                      </select>
+                    </div>
+                    {errors.afinidad && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.afinidad}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="flex items-left text-sm mb-1 ml-2">
+                      Seleccione el nivel de energía
+                    </label>
+                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                      <select
+                        name="energia"
+                        placeholder="Nivel de energía *"
+                        value={form.energia}
+                        onChange={handleChange}
+                        disabled={submitting}
+                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                      >
+                        <option value="">Nivel de energía *</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="BAJA">Baja</option>
+                      </select>
+                    </div>
+                    {errors.energia && (
+                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                        {errors.energia}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center w-full mt-4">
+                    <label className="flex items-center gap-2">
                       <input
-                        type="text"
-                        name="raza"
-                        placeholder="Raza *"
-                        value={form.raza}
+                        type="checkbox"
+                        name="castrado"
+                        checked={form.castrado}
                         onChange={handleChange}
                         disabled={submitting}
-                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                       />
-                    </div>
-                    {errors.raza && (
-                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors.raza}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese el color de la mascota
+                      ¿Está castrado?
                     </label>
-                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                      <input
-                        type="text"
-                        name="color"
-                        placeholder="Color *"
-                        value={form.color}
-                        onChange={handleChange}
-                        disabled={submitting}
-                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                      />
-                    </div>
-                    {errors.color && (
-                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors.color}
-                      </p>
-                    )}
                   </div>
-
-                  <div className="mt-4">
-                    <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese el sexo la mascota
-                    </label>
-                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                      <select
-                        name="sexo"
-                        value={form.sexo}
-                        onChange={handleChange}
-                        disabled={submitting}
-                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                      >
-                        <option value="">Sexo *</option>
-                        <option value="MACHO">Macho</option>
-                        <option value="HEMBRA">Hembra</option>
-                      </select>
-                    </div>
-                    {errors.sexo && (
-                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors.sexo}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese el tamaño aproximado de la mascota
-                    </label>
-                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                      <select
-                        name="tamaño"
-                        value={form.tamaño}
-                        onChange={handleChange}
-                        disabled={submitting}
-                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                      >
-                        <option value="">Tamaño *</option>
-                        <option value="MINI">Mini</option>
-                        <option value="PEQUEÑO">Pequeño</option>
-                        <option value="MEDIANO">Mediano</option>
-                        <option value="GRANDE">Grande</option>
-                      </select>
-                    </div>
-                    {errors.tamaño && (
-                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors.tamaño}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="flex items-left text-sm mb-1 ml-2">
-                      Ingrese la edad aproximada de la mascota (puede variar
-                      según la raza)
-                    </label>
-                    <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                      <select
-                        name="edad"
-                        value={form.edad}
-                        onChange={handleChange}
-                        disabled={submitting}
-                        className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                      >
-                        <option value="">Edad *</option>
-                        <option value="CACHORRO">
-                          Cachorro (hasta 12 meses)
-                        </option>
-                        <option value="ADULTO">Adulto (1 a 7 años)</option>
-                        <option value="MAYOR">Mayor (Más de 7 años)</option>
-                      </select>
-                    </div>
-                    {errors.edad && (
-                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors.edad}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* ADOPCION */}
-                {form.tipo === "ADOPCION" && (
-                  <>
-                    <div className="mt-4">
-                      <label className="flex items-left text-sm mb-1 ml-2">
-                        Seleccione la afinidad con niños
-                      </label>
-                      <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                        <select
-                          name="afinidad"
-                          placeholder="Afinidad con niños *"
-                          value={form.afinidad}
-                          onChange={handleChange}
-                          disabled={submitting}
-                          className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                        >
-                          <option value="">Afinidad *</option>
-                          <option value="ALTA">Alta</option>
-                          <option value="MEDIA">Media</option>
-                          <option value="BAJA">Baja</option>
-                        </select>
-                      </div>
-                      {errors.afinidad && (
-                        <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                          {errors.afinidad}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mt-4">
-                      <label className="flex items-left text-sm mb-1 ml-2">
-                        Seleccione el nivel de energía
-                      </label>
-                      <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                        <select
-                          name="energia"
-                          placeholder="Nivel de energía *"
-                          value={form.energia}
-                          onChange={handleChange}
-                          disabled={submitting}
-                          className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                        >
-                          <option value="">Nivel de energía *</option>
-                          <option value="ALTA">Alta</option>
-                          <option value="MEDIA">Media</option>
-                          <option value="BAJA">Baja</option>
-                        </select>
-                      </div>
-                      {errors.energia && (
-                        <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                          {errors.energia}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex items-center w-full mt-4">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          name="castrado"
-                          checked={form.castrado}
-                          onChange={handleChange}
-                          disabled={submitting}
-                        />
-                        ¿Está castrado?
-                      </label>
-                    </div>
-                    {errors.castrado && (
-                      <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                        {errors.castrado}
-                      </p>
-                    )}
-                  </>
-                )}
-
-                {/* Detalles Adicionales */}
-                <div className="mt-4">
-                  <label className="flex items-left text-sm mb-1 ml-2">
-                    Puedes agregar detalles adicionales sobre la publicación
-                    (Opcional)
-                  </label>
-                  <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
-                    <textarea
-                      name="detalles"
-                      placeholder="Detalles Adicionales"
-                      value={form.detalles}
-                      onChange={handleChange}
-                      disabled={submitting}
-                      rows="2"
-                      className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
-                    />
-                  </div>
-                  {errors.detalles && (
+                  {errors.castrado && (
                     <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                      {errors.detalles}
+                      {errors.castrado}
                     </p>
                   )}
+                </>
+              )}
+
+              {/* Detalles Adicionales */}
+              <div className="mt-4">
+                <label className="flex items-left text-sm mb-1 ml-2">
+                  Puedes agregar detalles adicionales sobre la publicación
+                  (Opcional)
+                </label>
+                <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
+                  <textarea
+                    name="detalles"
+                    placeholder="Detalles Adicionales"
+                    value={form.detalles}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    rows="2"
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
+                  />
                 </div>
-              </>
+                {errors.detalles && (
+                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
+                    {errors.detalles}
+                  </p>
+                )}
+              </div>
             </div>
             {/* Botón */}
             <div className="col-span-2 flex justify-end mt-4">
@@ -877,7 +872,7 @@ export const CrearPublicacion = {
             </div>
 
             {result && <p className="mt-2 text-white/80 text-sm">{result}</p>}
-          </motion.form>
+          </form>
         </motion.div>
       </div>
     );
