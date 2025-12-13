@@ -365,7 +365,6 @@ export const CrearPublicacion = {
         );
 
         const datosParaEnviar = {
-          titulo: form.titulo || "",
           descripcion: form.descripcion,
           tipo: form.tipo,
           raza: form.raza,
@@ -378,7 +377,6 @@ export const CrearPublicacion = {
           energia: form.energia,
           castrado: form.castrado,
           img: form.img,
-          detalles: form.detalles || "",
         };
 
         if (form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") {
