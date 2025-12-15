@@ -13,7 +13,6 @@ export const CrearPublicacion = {
   Component: () => {
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState({
-      titulo: "",
       descripcion: "",
       tipo: "",
       raza: "",
@@ -62,7 +61,6 @@ export const CrearPublicacion = {
     useEffect(() => {
       if (editData) {
         setForm({
-          titulo: editData.titulo || "",
           descripcion: editData.descripcion || "",
           tipo: editData.tipo || "",
           raza: editData.raza || "",
@@ -86,7 +84,6 @@ export const CrearPublicacion = {
 
     const resetForm = () => {
       setForm({
-        titulo: "",
         descripcion: "",
         tipo: "",
         raza: "",
@@ -204,22 +201,6 @@ export const CrearPublicacion = {
       let valid = true;
       let newErrors = {};
 
-      // Valid titulo
-      const titulo = form.titulo.trim();
-
-      if (titulo) {
-        if (titulo.length < 9) {
-          newErrors.titulo = "El título debe tener al menos 10 caracteres";
-          valid = false;
-        } else if (titulo.length > 71) {
-          newErrors.titulo = "El título no puede contener más de 70 caracteres";
-          valid = false;
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(titulo)) {
-          newErrors.titulo = "El título solo puede contener letras y espacios";
-          valid = false;
-        }
-      }
-
       //Valid detalles
       const detalles = form.detalles.trim();
 
@@ -228,7 +209,7 @@ export const CrearPublicacion = {
           newErrors.detalles =
             "Los detalles no pueden contener más de 250 caracteres";
           valid = false;
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(titulo)) {
+        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(detalles)) {
           newErrors.detalles =
             "Los detalles solo pueden contener letras y espacios";
           valid = false;
@@ -353,6 +334,10 @@ export const CrearPublicacion = {
           newErrors.energia = "El nivel de energía es obligatorio";
           valid = false;
         }
+        if (form.castrado === undefined) {
+          newErrors.castrado = "Debe indicar si está castrado";
+          valid = false;
+        }
       }
 
       setErrors(newErrors);
@@ -373,11 +358,15 @@ export const CrearPublicacion = {
           color: form.color,
           edad: form.edad,
           whatsapp: form.whatsapp,
-          afinidad: form.afinidad,
-          energia: form.energia,
-          castrado: form.castrado,
           img: form.img,
+          ...(form.detalles?.trim() && { detalles: form.detalles }),
         };
+
+        if (form.tipo === "ADOPCION") {
+          datosParaEnviar.afinidad = form.afinidad;
+          datosParaEnviar.energia = form.energia;
+          datosParaEnviar.castrado = form.castrado;
+        }
 
         if (form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") {
           datosParaEnviar.lugar = form.lugar;
@@ -495,29 +484,6 @@ export const CrearPublicacion = {
                 {errors.tipo && (
                   <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
                     {errors.tipo}
-                  </p>
-                )}
-              </div>
-
-              {/* Título */}
-              <div className="mt-4">
-                <label className="flex items-left text-sm mb-1 ml-2">
-                  Título de la publicación (opcional)
-                </label>
-                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                  <input
-                    type="text"
-                    name="titulo"
-                    placeholder="Ingrese un título para la publicación *"
-                    value={form.titulo}
-                    onChange={handleChange}
-                    disabled={submitting}
-                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
-                  />
-                </div>
-                {errors.titulo && (
-                  <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                    {errors.titulo}
                   </p>
                 )}
               </div>
@@ -682,7 +648,9 @@ export const CrearPublicacion = {
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     >
-                      <option value="">Seleccione el sexo de su animal *</option>
+                      <option value="">
+                        Seleccione el sexo de su animal *
+                      </option>
                       <option value="MACHO">Macho</option>
                       <option value="HEMBRA">Hembra</option>
                     </select>

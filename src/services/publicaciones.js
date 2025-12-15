@@ -61,15 +61,23 @@ export const publicacionesService = {
   crearPublicacion: async (datos) => {
     try {
       const token = localStorage.getItem("token");
+
       const resp = await fetch(`${API_URL}/publicaciones`, {
         method: "POST",
         body: JSON.stringify(datos),
         headers: {
-          "Content-type": "application/json; charset=UTF-8",
+          "Content-Type": "application/json; charset=UTF-8",
           "x-token": token,
         },
       });
-      return await resp.json();
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        return { success: false, ...data };
+      }
+
+      return data;
     } catch (error) {
       return { success: false, msg: "Error de conexión al servidor" };
     }
@@ -78,15 +86,27 @@ export const publicacionesService = {
   actualizarPublicacion: async (id, datos) => {
     try {
       const token = localStorage.getItem("token");
+
       const resp = await fetch(`${API_URL}/publicaciones/${id}`, {
         method: "PUT",
         body: JSON.stringify(datos),
         headers: {
-          "Content-type": "application/json; charset=UTF-8",
+          "Content-Type": "application/json; charset=UTF-8",
           "x-token": token,
         },
       });
-      return await resp.json();
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        return {
+          success: false,
+          ...data,
+          status: resp.status,
+        };
+      }
+
+      return data;
     } catch (error) {
       return { success: false, msg: "Error de conexión al servidor" };
     }

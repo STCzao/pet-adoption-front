@@ -72,9 +72,7 @@ const PerdidosPage = () => {
                 </div>
               ) : publicacionesFiltradas.length > 0 ? (
                 publicacionesFiltradas.map((pub) => (
-                  <div>
-                    <CardGenerica key={pub._id} publicacion={pub} />
-                  </div>
+                  <CardGenerica key={pub._id} publicacion={pub} />
                 ))
               ) : (
                 <div className="col-span-full flex justify-center text-center items-center text-black text-2xl font-medium mt-10">
