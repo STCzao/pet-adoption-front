@@ -57,13 +57,10 @@ const CardGenerica = ({ publicacion }) => {
           {img && (
             <img
               src={img}
-              alt={titulo}
+              alt={"Imagen"}
               className="w-full h-[40vh] sm:h-[20rem] object-cover rounded-lg mb-1"
             />
           )}
-          <h3 className="font-bold text-white text-l mb-1 text-center">
-            {titulo || "Sin título"}
-          </h3>
           <div className="flex flex-col text-center text-white mb-2 rounded text-sm">
             {(tipo === "PERDIDO" || tipo === "ENCONTRADO") && (
               <>{lugar && <p className="mt-2">Lugar: {lugar}</p>}</>

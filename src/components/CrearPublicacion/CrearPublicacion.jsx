@@ -13,7 +13,7 @@ export const CrearPublicacion = {
   Component: () => {
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState({
-      descripcion: "",
+      especie: "",
       tipo: "",
       raza: "",
       lugar: "",
@@ -61,7 +61,7 @@ export const CrearPublicacion = {
     useEffect(() => {
       if (editData) {
         setForm({
-          descripcion: editData.descripcion || "",
+          especie: editData.especie || "",
           tipo: editData.tipo || "",
           raza: editData.raza || "",
           lugar: editData.lugar || "",
@@ -84,7 +84,7 @@ export const CrearPublicacion = {
 
     const resetForm = () => {
       setForm({
-        descripcion: "",
+        especie: "",
         tipo: "",
         raza: "",
         lugar: "",
@@ -216,20 +216,6 @@ export const CrearPublicacion = {
         }
       }
 
-      //Valid descripcion
-      if (!form.descripcion.trim()) {
-        newErrors.descripcion = "La descripción es obligatoria";
-        valid = false;
-      } else if (form.descripcion.trim().length < 9) {
-        newErrors.descripcion =
-          "La descripción debe tener al menos 10 caracteres";
-        valid = false;
-      } else if (form.descripcion.trim().length > 301) {
-        newErrors.descripcion =
-          "La descripción no puede contener más de 300 caracteres";
-        valid = false;
-      }
-
       //Valid tipo
       if (!form.tipo) {
         newErrors.tipo = "El tipo de publicación es obligatorio";
@@ -261,8 +247,14 @@ export const CrearPublicacion = {
       if (!form.color.trim()) {
         newErrors.color = "El color es obligatorio";
         valid = false;
-      } else if (form.color.trim().length > 51) {
-        newErrors.color = "El color no puede contener más de 50 caracteres";
+      } else if (form.color.trim().length > 81) {
+        newErrors.color = "El color no puede contener más de 80 caracteres";
+        valid = false;
+      }
+
+      //Valid especie
+      if (!form.especie.trim()) {
+        newErrors.especie = "La especie es obligatoria";
         valid = false;
       }
 
@@ -334,10 +326,6 @@ export const CrearPublicacion = {
           newErrors.energia = "El nivel de energía es obligatorio";
           valid = false;
         }
-        if (form.castrado === undefined) {
-          newErrors.castrado = "Debe indicar si está castrado";
-          valid = false;
-        }
       }
 
       setErrors(newErrors);
@@ -350,8 +338,8 @@ export const CrearPublicacion = {
         );
 
         const datosParaEnviar = {
-          descripcion: form.descripcion,
           tipo: form.tipo,
+          especie: form.especie,
           raza: form.raza,
           sexo: form.sexo,
           tamaño: form.tamaño,
@@ -365,12 +353,12 @@ export const CrearPublicacion = {
         if (form.tipo === "ADOPCION") {
           datosParaEnviar.afinidad = form.afinidad;
           datosParaEnviar.energia = form.energia;
-          datosParaEnviar.castrado = form.castrado;
+          datosParaEnviar.castrado = !!form.castrado;
         }
 
         if (form.tipo === "PERDIDO" || form.tipo === "ENCONTRADO") {
           datosParaEnviar.lugar = form.lugar;
-          datosParaEnviar.fecha = form.fecha;
+          datosParaEnviar.fecha = form.fecha; // "YYYY-MM-DD"
         }
 
         let result;
@@ -463,7 +451,7 @@ export const CrearPublicacion = {
               {/* Tipo */}
               <div className="mt-4">
                 <label className="flex items-left text-sm mb-1 ml-2">
-                  Perdidos/Encontrados/Adopciones
+                  Seleccione el tipo de publicación
                 </label>
                 <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                   <select
@@ -474,7 +462,7 @@ export const CrearPublicacion = {
                     className="bg-transparent text-gray-500 outline-none text-sm w-full h-full"
                   >
                     <option value="">
-                      Seleccione el tipo de publicación *
+                      Seleccione entre perdido/encontrado/adopción *
                     </option>
                     <option value="PERDIDO">Perdido</option>
                     <option value="ENCONTRADO">Encontrado</option>
@@ -519,25 +507,32 @@ export const CrearPublicacion = {
                 )}
               </div>
 
-              {/* Descripción */}
+              {/* Especie */}
               <div className="mt-4">
                 <label className="flex items-left text-sm mb-1 ml-2">
-                  Descripción del animal
+                  Especie
                 </label>
-                <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
-                  <textarea
-                    name="descripcion"
-                    placeholder="Ingrese una descripción de su animal *"
-                    value={form.descripcion}
+                <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <select
+                    name="especie"
+                    value={form.especie}
                     onChange={handleChange}
                     disabled={submitting}
-                    rows="3"
-                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
-                  />
+                    className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
+                  >
+                    <option value="">
+                      Seleccione la especie de su animal *
+                    </option>
+                    <option value="PERRO">Perro</option>
+                    <option value="GATO">Gato</option>
+                    <option value="AVE">Ave</option>
+                    <option value="CONEJO">Conejo</option>
+                    <option value="OTRO">Otro</option>
+                  </select>
                 </div>
-                {errors.descripcion && (
+                {errors.especie && (
                   <p className="text-red-400 text-xs mt-1 text-left w-full px-4">
-                    {errors.descripcion}
+                    {errors.especie}
                   </p>
                 )}
               </div>
@@ -592,7 +587,7 @@ export const CrearPublicacion = {
 
               {/* Raza, Color, Sexo, Tamaño, Edad */}
               <div className="flex flex-col">
-                <div className="mt-4">
+                <div>
                   <label className="flex items-left text-sm mb-1 ml-2">
                     Raza
                   </label>
@@ -622,7 +617,7 @@ export const CrearPublicacion = {
                     <input
                       type="text"
                       name="color"
-                      placeholder="Ingrese el color de su animal *"
+                      placeholder="Ingrese el color principal del animal (especifique manchas y otros colores) *"
                       value={form.color}
                       onChange={handleChange}
                       disabled={submitting}
@@ -653,6 +648,7 @@ export const CrearPublicacion = {
                       </option>
                       <option value="MACHO">Macho</option>
                       <option value="HEMBRA">Hembra</option>
+                      <option value="DESCONOZCO">Desconozco</option>
                     </select>
                   </div>
                   {errors.sexo && (
@@ -674,9 +670,7 @@ export const CrearPublicacion = {
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     >
-                      <option value="">
-                        Seleccione el tamaño aproximado de su animal *
-                      </option>
+                      <option value="SIN ESPECIFICAR">Sin especificar</option>
                       <option value="MINI">Mini</option>
                       <option value="PEQUEÑO">Pequeño</option>
                       <option value="MEDIANO">Mediano</option>
@@ -692,7 +686,7 @@ export const CrearPublicacion = {
 
                 <div className="mt-4">
                   <label className="flex text-left items-left text-sm mb-1 ml-2">
-                    Edad aproximada de su animal (puede variar según la raza)
+                    Edad aproximada de su animal
                   </label>
                   <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                     <select
@@ -702,7 +696,7 @@ export const CrearPublicacion = {
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     >
-                      <option value="">Seleccione la edad aproximada *</option>
+                      <option value="SIN ESPECIFICAR">Sin especificar</option>
                       <option value="CACHORRO">
                         Cachorro (hasta 12 meses)
                       </option>
@@ -823,16 +817,16 @@ export const CrearPublicacion = {
               {/* Detalles Adicionales */}
               <div className="mt-4">
                 <label className="flex text-left items-left text-sm mb-1 ml-2">
-                  Detalles adicionales (opcional)
+                  Señas particulares y estado del animal
                 </label>
                 <div className="flex items-center w-full bg-white border border-gray-300/80 min-h-12 rounded-2xl overflow-hidden p-4 gap-2">
                   <textarea
                     name="detalles"
-                    placeholder="Puedes agregar detalles adicionales sobre la publicación"
+                    placeholder="Agregar aquí cualquier detalle que ayude a identificarlo o a tratar con él: manchas, cicatrices, heridas, si está medicado, si llevaba collar, temperamento o cualquier otra información importante."
                     value={form.detalles}
                     onChange={handleChange}
                     disabled={submitting}
-                    rows="2"
+                    rows="4"
                     className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full resize-none"
                   />
                 </div>

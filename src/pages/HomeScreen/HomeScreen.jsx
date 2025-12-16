@@ -68,7 +68,7 @@ const HomeScreen = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            Desde acá podés elegir qué tipo de consulta o aviso que querés hacer:
+            Desde acá podés elegir qué tipo de consulta o aviso querés hacer:
           </motion.p>
         </div>
         <div className="mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
