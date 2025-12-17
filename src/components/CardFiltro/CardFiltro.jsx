@@ -33,6 +33,9 @@ const CardFiltro = ({ filtros, setFiltros }) => {
           <option className="text-black" value="">
             Seleccione la edad *
           </option>
+          <option className="text-black" value="SIN ESPECIFICAR">
+            Sin especificar
+          </option>
           <option className="text-black" value="CACHORRO">
             Cachorro
           </option>
@@ -57,6 +60,9 @@ const CardFiltro = ({ filtros, setFiltros }) => {
           <option className="text-black" value="">
             Seleccione el sexo *
           </option>
+          <option className="text-black" value="DESCONOZCO">
+            Desconozco
+          </option>
           <option className="text-black" value="MACHO">
             Macho
           </option>
@@ -77,6 +83,9 @@ const CardFiltro = ({ filtros, setFiltros }) => {
         >
           <option className="text-black" value="">
             Seleccione el tamaño *
+          </option>
+          <option className="text-black" value="SIN ESPECIFICAR">
+            Sin especificar
           </option>
           <option className="text-black" value="MINI">
             Mini

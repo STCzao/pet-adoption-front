@@ -670,6 +670,9 @@ export const CrearPublicacion = {
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     >
+                      <option value="">
+                        Seleccione el tamaño de su animal *
+                      </option>
                       <option value="SIN ESPECIFICAR">Sin especificar</option>
                       <option value="MINI">Mini</option>
                       <option value="PEQUEÑO">Pequeño</option>
@@ -696,6 +699,9 @@ export const CrearPublicacion = {
                       disabled={submitting}
                       className="bg-transparent text-gray-500 placeholder-gray-500 outline-none text-sm w-full h-full"
                     >
+                      <option value="">
+                        Seleccione la afinidad con niños *
+                      </option>
                       <option value="SIN ESPECIFICAR">Sin especificar</option>
                       <option value="CACHORRO">
                         Cachorro (hasta 12 meses)

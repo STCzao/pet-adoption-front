@@ -62,8 +62,6 @@ export const publicacionesService = {
     try {
       const token = localStorage.getItem("token");
 
-      console.log("Error al crear:", datos);
-
       const resp = await fetch(`${API_URL}/publicaciones`, {
         method: "POST",
         body: JSON.stringify(datos),
@@ -78,10 +76,8 @@ export const publicacionesService = {
       if (!resp.ok) {
         return { success: false, ...data };
       }
-
       return data;
     } catch (error) {
-      console.error("Error en crear:", error);
       return { success: false, msg: "Error de conexión al servidor" };
     }
   },
