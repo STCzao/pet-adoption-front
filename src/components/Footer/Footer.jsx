@@ -37,7 +37,7 @@ export default function Footer() {
               <li>
                 <a
                   onClick={() => {
-                    navigate("/perdidos");
+                    navigate("/perdidos-informacion");
                     window.scrollTo(0, 0);
                   }}
                   className="hover:underline hover:text-black transition cursor-pointer"
@@ -48,7 +48,7 @@ export default function Footer() {
               <li>
                 <a
                   onClick={() => {
-                    navigate("/encontrados");
+                    navigate("/encontrados-informacion");
                     window.scrollTo(0, 0);
                   }}
                   className="hover:underline hover:text-black transition cursor-pointer"
@@ -59,7 +59,7 @@ export default function Footer() {
               <li>
                 <a
                   onClick={() => {
-                    navigate("/adopciones");
+                    navigate("/adopciones-informacion");
                     window.scrollTo(0, 0);
                   }}
                   className="hover:underline hover:text-black transition cursor-pointer"
