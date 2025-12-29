@@ -112,7 +112,7 @@ const ContactScreen = () => {
           className="flex flex-col text-center gap-4 mt-30"
         >
           <span className="text-3xl">
-            ¿Ocurrió algo? Comunícanos tus inquietudes
+            Formulario para colaboradores
           </span>
           <span className="text-sm">
             Si querés sumarte a esta iniciativa, acá podés contarnos de qué
