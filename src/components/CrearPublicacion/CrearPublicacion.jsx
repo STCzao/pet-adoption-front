@@ -416,6 +416,7 @@ export const CrearPublicacion = {
           );
           resetForm();
           setTimeout(() => setOpen(false), 2000);
+          window.location.reload();
 
           const eventName = isEditing
             ? "publicacionActualizada"
@@ -642,13 +643,13 @@ export const CrearPublicacion = {
                 <>
                   <div className="mt-4">
                     <label className="flex items-left text-sm mb-1 ml-2">
-                      Descripción del lugar
+                      Zona/calle (y altura)
                     </label>
                     <div className="flex items-center w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                       <input
                         type="text"
                         name="lugar"
-                        placeholder="Describa el lugar donde perdió/encontró a su animal *"
+                        placeholder="Indique el lugar donde perdió/encontró al animal *"
                         value={form.lugar}
                         onChange={handleChange}
                         disabled={submitting}

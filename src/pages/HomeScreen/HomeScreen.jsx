@@ -208,7 +208,7 @@ const HomeScreen = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="border border-white/20 font-medium rounded-lg bg-white/20 p-4 sm:p-5 text-base sm:text-lg md:text-xl text-left max-w-lg md:max-w-2xl leading-relaxed md:ml-8"
+          className="border border-white/20 font-medium rounded-lg mt-5 bg-white/20 p-4 sm:p-5 text-base sm:text-lg md:text-xl text-left max-w-lg md:max-w-2xl leading-relaxed md:ml-8"
         >
           Sumarse a esta iniciativa puede tomar muchas formas. Podés colaborar
           ofreciendo tránsito provisorio, ayudando con traslados, aportando para
