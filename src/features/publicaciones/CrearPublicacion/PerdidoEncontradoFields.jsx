@@ -6,8 +6,18 @@ const fieldInput =
   "mt-1.5 w-full rounded-[0.9rem] border border-[#2f241d]/12 bg-white px-4 py-2.5 text-sm text-[#3d332d] outline-none transition placeholder:text-[#9e8e84] focus:border-[#d46f49]/45 focus:ring-2 focus:ring-[#d46f49]/15 disabled:opacity-50";
 const fieldError = "mt-1.5 text-xs text-[#a84632]";
 
-export const PerdidoEncontradoFields = ({ form, handleChange, errors, submitting }) => {
+export const PerdidoEncontradoFields = ({
+  form,
+  handleChange,
+  errors,
+  submitting,
+  onCapturarUbicacion,
+  capturandoUbicacion,
+  errorUbicacion,
+}) => {
   if (form.tipo !== "PERDIDO" && form.tipo !== "ENCONTRADO") return null;
+
+  const tieneUbicacionGPS = form.lat != null && form.lng != null;
 
   return (
     <>
@@ -43,6 +53,29 @@ export const PerdidoEncontradoFields = ({ form, handleChange, errors, submitting
         error={errors.lugar}
         placeholder="Ej: Barrio Norte, calle San Martín 500"
       />
+
+      <div>
+        <button
+          type="button"
+          onClick={onCapturarUbicacion}
+          disabled={submitting || capturandoUbicacion}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+            tieneUbicacionGPS
+              ? "border-[#4d6a2e]/30 bg-[#eaf3e1] text-[#4d6a2e]"
+              : "border-[#2f241d]/12 bg-white text-[#5f4c41] hover:bg-[#f6efe4]"
+          }`}
+        >
+          {capturandoUbicacion
+            ? "Obteniendo ubicación..."
+            : tieneUbicacionGPS
+              ? "✓ Ubicación GPS capturada"
+              : "Usar mi ubicación GPS"}
+        </button>
+        <p className="mt-1.5 text-xs text-[#8d7a6d]">
+          Usar el GPS mejora la precisión del pin en el mapa respecto de cargar solo la dirección.
+        </p>
+        {errorUbicacion && <p className={fieldError}>{errorUbicacion}</p>}
+      </div>
 
       <div>
         <label htmlFor="fecha" className={fieldLabel}>

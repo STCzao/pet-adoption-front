@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { formatFecha } from "../../../utils/dateHelpers.js";
@@ -25,7 +25,7 @@ const estadoResueltolabel = {
 const tipoDateLabel = {
   PERDIDO: "Perdido el",
   ENCONTRADO: "Encontrado el",
-  ADOPCION: "Desde el",
+  ADOPCION: "Publicado el",
 };
 
 const tipoLocationLabel = {
@@ -57,6 +57,11 @@ const CardGenerica = ({ publicacion, cardId, isSuccessful = false }) => {
   } = publicacion;
 
   const allImgs = publicacion.imgs?.length > 0 ? publicacion.imgs : publicacion.img ? [publicacion.img] : [];
+  const displayDate = tipo === "ADOPCION" ? publicacion.fechaCreacion : fecha;
+  const displayDateLabel =
+    tipo === "ADOPCION" && displayDate
+      ? new Date(displayDate).toLocaleDateString("es-AR")
+      : formatFecha(displayDate);
   const tamano = getPublicacionTamano(publicacion);
   const meta = getTipoColorMeta(tipo);
   const detailPath = getPublicacionDetailPath(publicacion);
@@ -88,8 +93,17 @@ const CardGenerica = ({ publicacion, cardId, isSuccessful = false }) => {
       } finally {
         setContactLoading(false);
       }
-    });
+    }, publicacion?._id);
   };
+
+  useEffect(() => {
+    if (isSuccessful || !publicacion?._id) return;
+    if (localStorage.getItem("pendingWhatsapp") !== publicacion._id) return;
+
+    localStorage.removeItem("pendingWhatsapp");
+    handleWhatsappClick();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <article
@@ -217,9 +231,9 @@ const CardGenerica = ({ publicacion, cardId, isSuccessful = false }) => {
           </div>
         )}
 
-        {fecha && (
+        {displayDate && (
           <p className="text-[0.72rem] text-[#999]">
-            {tipoDateLabel[tipo] || tipoDateLabel.PERDIDO}: {formatFecha(fecha)}
+            {tipoDateLabel[tipo] || tipoDateLabel.PERDIDO}: {displayDateLabel}
           </p>
         )}
 

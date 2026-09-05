@@ -39,6 +39,9 @@ const CardFiltro = ({ filtros, setFiltros, tipo, razasPorEspecie = {} }) => {
           <h3 className="text-[1.25rem] font-bold leading-none text-[#241914]">
             Refinar resultados
           </h3>
+          <p className="mt-2 text-[0.72rem] leading-relaxed text-[#816959]">
+            Si no encuentra lo que busca, pruebe con palabras similares.
+          </p>
         </div>
 
         <button

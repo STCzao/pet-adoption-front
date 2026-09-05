@@ -5,17 +5,35 @@ import Seo from "../components/seo/Seo";
 import ColaboradoresForm from "../features/colaboradores/ColaboradoresForm";
 import { buildBreadcrumbSchema } from "../components/seo/seoUtils";
 
+const QUIENES_SOMOS_SECTIONS = [
+  {
+    title: "Misión del proyecto",
+    content:
+      "Buscamos dar visibilidad a animales perdidos, encontrados y en adopción para que cada publicación tenga más alcance, más claridad y mejores posibilidades de lograr un reencuentro o un nuevo hogar.",
+  },
+  {
+    title: "Quiénes lo hacen",
+    content:
+      "Perdidos y Adopciones se sostiene gracias a personas comprometidas con el bienestar animal, la difusión responsable y la ayuda comunitaria frente a situaciones urgentes o procesos de adopción.",
+  },
+  {
+    title: "Cómo nació",
+    content:
+      "El proyecto surgió a partir de la necesidad de reunir en un solo espacio casos dispersos en redes sociales, para ordenar la información, facilitar el contacto y dar más herramientas a quienes buscan ayuda.",
+  },
+];
+
 const ContactScreen = () => {
   return (
     <div className="bg-[#f6efe4] text-[#241914]">
       <Seo
-        title="Comunidad solidaria"
-        description="Sumate a la comunidad solidaria de Perdidos y Adopciones Tucumán."
+        title="Quiénes somos y cómo colaborar"
+        description="Conocé quiénes están detrás de Perdidos y Adopciones Tucumán y sumate a la comunidad solidaria colaborando o donando."
         path="/contacto"
         structuredData={[
           buildBreadcrumbSchema([
             { name: "Inicio", path: "/" },
-            { name: "Comunidad solidaria", path: "/contacto" },
+            { name: "Quiénes somos y cómo colaborar", path: "/contacto" },
           ]),
         ]}
       />
@@ -50,10 +68,51 @@ const ContactScreen = () => {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+            className="mb-10"
+          >
+            <h2 className="text-center text-xl font-semibold text-[#241914]">
+              Quiénes somos
+            </h2>
+            <div className="mt-5 space-y-4">
+              {QUIENES_SOMOS_SECTIONS.map((section) => (
+                <section
+                  key={section.title}
+                  className="rounded-[1.2rem] border border-[#2f241d]/10 bg-white/70 p-5"
+                >
+                  <h3 className="font-semibold text-[#241914]">{section.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#5f4c41]">
+                    {section.content}
+                  </p>
+                </section>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <ColaboradoresForm />
           </motion.div>
+
+          {/* Donaciones: pendiente el alias real antes de publicar esta sección.
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-10 rounded-[1.2rem] border border-[#2f241d]/10 bg-white/70 p-5 text-center"
+          >
+            <h2 className="text-xl font-semibold text-[#241914]">Donaciones</h2>
+            <p className="mt-2 text-sm leading-relaxed text-[#5f4c41]">
+              También podés colaborar económicamente con una transferencia.
+            </p>
+            <p className="mt-3 text-sm font-semibold text-[#241914]">
+              Alias: [ALIAS A COMPLETAR]
+            </p>
+          </motion.div>
+          */}
         </div>
       </div>
 

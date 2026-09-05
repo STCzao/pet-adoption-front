@@ -76,6 +76,24 @@ export const adminService = {
     }
   },
 
+  getPublicacionesPendientesUbicacion: async (page = 1, limit = 20) => {
+    try {
+      const response = await axiosInstance.get(
+        `/publicaciones/admin/pendientes-ubicacion?page=${page}&limit=${limit}`,
+      );
+
+      return buildServiceSuccess({
+        publicaciones: response.data.publicaciones || [],
+        total: response.data.total || 0,
+        totalPages: response.data.totalPages || 1,
+        page: response.data.page || page,
+        requestId: getResponseRequestId(response),
+      });
+    } catch (error) {
+      return mapServiceError(error, "Error de conexión al servidor");
+    }
+  },
+
   getUsuariosAdmin: async (params = {}) => {
     try {
       const query = new URLSearchParams();

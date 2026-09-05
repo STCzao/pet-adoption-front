@@ -36,6 +36,7 @@ import {
 } from "../../../components/seo/seoUtils";
 import { getCloudinaryUrl } from "../../../utils/cloudinaryUtils";
 import LoadingState from "../../../components/ui/LoadingState";
+import PublicacionUbicacionMapa from "../components/PublicacionUbicacionMapa";
 
 const tipoMeta = {
   PERDIDO: {
@@ -227,17 +228,28 @@ export default function PublicacionDetalle() {
       } finally {
         setContactLoading(false);
       }
-    });
+    }, publicacion?._id);
   };
+
+  useEffect(() => {
+    if (!publicacion?._id) return;
+    if (localStorage.getItem("pendingWhatsapp") !== publicacion._id) return;
+
+    localStorage.removeItem("pendingWhatsapp");
+    handleContact();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publicacion?._id]);
 
   const meta = tipoMeta[publicacion?.tipo] || tipoMeta.PERDIDO;
   const isResuelto = ESTADOS_RESUELTOS.includes(publicacion?.estado);
   const fromExitosas = location.state?.from === "exitosas" || (isResuelto && !location.state?.from);
   const backSearch = location.state?.backSearch || "";
   const backPath = fromExitosas
-    ? "/casos-resueltos"
+    ? `/casos-resueltos${publicacion?._id ? `#${publicacion._id}` : ""}`
     : publicacion
-      ? `/publicaciones/${getPublicacionSlug(publicacion.tipo)}${backSearch}`
+      ? `/publicaciones/${getPublicacionSlug(publicacion.tipo)}${backSearch}${
+          publicacion._id ? `#${publicacion._id}` : ""
+        }`
       : "/";
   const tamano = getPublicacionTamano(publicacion);
   const primaryLocation = publicacion?.localidad || publicacion?.lugar;
@@ -606,8 +618,18 @@ export default function PublicacionDetalle() {
                             {secondaryLocation}
                           </p>
                         )}
-                        <div className="mt-3 flex h-[5.5rem] items-center justify-center overflow-hidden rounded-[0.55rem] bg-[#f0f0f0]">
-                          <IconMapPin size={28} color="#ccc" />
+                        <div className="mt-3 h-[5.5rem] overflow-hidden rounded-[0.55rem] bg-[#f0f0f0]">
+                          {publicacion?.ubicacionPublica?.coordinates ? (
+                            <PublicacionUbicacionMapa
+                              tipo={publicacion.tipo}
+                              coordinates={publicacion.ubicacionPublica.coordinates}
+                              className="h-full w-full"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center">
+                              <IconMapPin size={28} color="#ccc" />
+                            </div>
+                          )}
                         </div>
                       </div>
 

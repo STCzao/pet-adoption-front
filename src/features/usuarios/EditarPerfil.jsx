@@ -30,6 +30,11 @@ const EMPTY_PASSWORD_FORM = {
 const inputClassName =
   "mt-2 flex h-12 w-full items-center rounded-[1.1rem] border border-[color:var(--shell-line)] bg-[color:var(--shell-surface)] px-4 text-sm text-[#3d332d] shadow-[0_12px_30px_rgba(59,43,34,0.06)] transition-colors duration-300 focus-within:border-[color:var(--shell-accent-strong)] focus-within:ring-2 focus-within:ring-[color:var(--shell-accent-strong)]/15";
 
+// Alinea el PasswordInput (pensado para el fondo oscuro de Login/Register) con el
+// resto de los campos de este modal: misma altura, radio, borde y foco.
+const passwordInputClassName =
+  "mt-2 !h-12 !rounded-[1.1rem] !border-[color:var(--shell-line)] !bg-[color:var(--shell-surface)] !pl-4 !shadow-[0_12px_30px_rgba(59,43,34,0.06)] focus-within:!border-[color:var(--shell-accent-strong)] focus-within:!ring-[color:var(--shell-accent-strong)]/15";
+
 const sectionClassName =
   "rounded-[1.35rem] border border-[color:var(--shell-line)] bg-[linear-gradient(180deg,rgba(255,250,244,0.98),rgba(248,240,229,0.96))] p-5 shadow-[0_16px_45px_rgba(57,42,31,0.08)]";
 
@@ -397,84 +402,87 @@ export const EditarPerfil = {
                   </button>
                 </div>
               ) : (
-                <div className="mt-6 grid gap-5 xl:grid-cols-[1.15fr_0.9fr]">
-                  <form className="space-y-5" onSubmit={handleSaveProfile}>
+                <div className="mt-6 space-y-5">
+                  <form onSubmit={handleSaveProfile}>
                     <section className={sectionClassName}>
-                      <div className="flex flex-col gap-5 md:flex-row md:items-start">
-                        <div className="flex flex-col items-center md:w-[180px] md:items-start">
-                          <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.1rem] bg-[#443128]">
+                      <div className="flex flex-col gap-5">
+                        <div className="flex flex-wrap items-center gap-4">
+                          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[1.1rem] bg-[#443128]">
                             {avatarContent}
                           </div>
 
-                          <label className="mt-4 w-full cursor-pointer rounded-full border border-[#c97b57]/25 bg-[#fff7ee] px-4 py-2 text-center text-sm font-semibold text-[#5d4437] transition-colors duration-200 hover:bg-[#fff2e4]">
-                            {uploadingImage ? "Subiendo..." : "Cambiar foto"}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={handleUploadProfileImage}
-                              disabled={uploadingImage || savingProfile}
-                            />
-                          </label>
+                          <div className="flex flex-col items-start gap-1.5">
+                            <label className="cursor-pointer rounded-full border border-[#c97b57]/25 bg-[#fff7ee] px-4 py-2 text-center text-sm font-semibold text-[#5d4437] transition-colors duration-200 hover:bg-[#fff2e4]">
+                              {uploadingImage ? "Subiendo..." : "Cambiar foto"}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleUploadProfileImage}
+                                disabled={uploadingImage || savingProfile}
+                              />
+                            </label>
 
-                          <p className="mt-3 text-center text-xs leading-relaxed text-[#7a695d] md:text-left">
-                            Si no cargas foto, mostraremos tus iniciales.
-                          </p>
-                          <FieldError message={profileErrors.img} />
+                            <p className="text-xs leading-relaxed text-[#7a695d]">
+                              Si no cargas foto, mostraremos tus iniciales.
+                            </p>
+                            <FieldError message={profileErrors.img} />
+                          </div>
                         </div>
 
-                        <div className="grid flex-1 gap-4 sm:grid-cols-2">
-                          <div className="sm:col-span-2">
-                            <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[#8d7a6d]">
-                              Datos de la cuenta
-                            </p>
-                          </div>
+                        <div>
+                          <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[#8d7a6d]">
+                            Datos de la cuenta
+                          </p>
 
-                          <label className="text-sm font-semibold text-[#352820] sm:col-span-2">
-                            Nombre completo
-                            <div className={inputClassName}>
-                              <input
-                                type="text"
-                                name="nombre"
-                                value={profileForm.nombre}
-                                onChange={handleProfileFieldChange}
-                                className="h-full w-full bg-transparent outline-none"
-                                maxLength={40}
-                                autoComplete="name"
-                              />
-                            </div>
-                            <FieldError message={profileErrors.nombre} />
-                          </label>
+                          <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            <label className="text-sm font-semibold text-[#352820]">
+                              Nombre completo
+                              <div className={inputClassName}>
+                                <input
+                                  type="text"
+                                  name="nombre"
+                                  value={profileForm.nombre}
+                                  onChange={handleProfileFieldChange}
+                                  className="h-full w-full bg-transparent outline-none"
+                                  maxLength={40}
+                                  autoComplete="name"
+                                />
+                              </div>
+                              <FieldError message={profileErrors.nombre} />
+                            </label>
 
-                          <label className="text-sm font-semibold text-[#352820]">
-                            Teléfono
-                            <div className={inputClassName}>
-                              <input
-                                type="text"
-                                name="telefono"
-                                value={profileForm.telefono}
-                                onChange={handleProfileFieldChange}
-                                className="h-full w-full bg-transparent outline-none"
-                                maxLength={15}
-                                autoComplete="tel"
-                              />
-                            </div>
-                            <FieldError message={profileErrors.telefono} />
-                          </label>
+                            <label className="text-sm font-semibold text-[#352820]">
+                              Teléfono
+                              <div className={inputClassName}>
+                                <input
+                                  type="text"
+                                  name="telefono"
+                                  value={profileForm.telefono}
+                                  onChange={handleProfileFieldChange}
+                                  className="h-full w-full bg-transparent outline-none"
+                                  maxLength={15}
+                                  autoComplete="tel"
+                                />
+                              </div>
+                              <FieldError message={profileErrors.telefono} />
+                            </label>
 
-                          <div className="text-sm font-semibold text-[#352820]">
-                            Correo
-                            <div className={`${inputClassName} bg-[#f4eee7] text-[#7c6d62]`}>
-                              <input
-                                type="email"
-                                value={userData.correo || ""}
-                                disabled
-                                className="h-full w-full cursor-not-allowed bg-transparent outline-none"
-                              />
+                            <div className="text-sm font-semibold text-[#352820]">
+                              Correo
+                              <div className={`${inputClassName} bg-[#f4eee7] text-[#7c6d62]`}>
+                                <input
+                                  type="email"
+                                  value={userData.correo || ""}
+                                  disabled
+                                  title={userData.correo || ""}
+                                  className="h-full w-full truncate bg-transparent outline-none cursor-not-allowed"
+                                />
+                              </div>
+                              <p className="mt-2 text-xs text-[#7f6c5f]">
+                                El correo no puede modificarse.
+                              </p>
                             </div>
-                            <p className="mt-2 text-xs text-[#7f6c5f]">
-                              El correo no puede modificarse­.
-                            </p>
                           </div>
                         </div>
                       </div>
@@ -499,80 +507,86 @@ export const EditarPerfil = {
                         </button>
                       </div>
                     </section>
-
-                    <section className={sectionClassName}>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[#8d7a6d]">
-                          Contraseña
-                        </p>
-                        <h2 className="text-lg font-semibold text-[#271d17]">
-                          Cambiar contraseña
-                        </h2>
-                      </div>
-
-                      <div className="mt-5 grid gap-4">
-                        <label className="text-sm font-semibold text-[#352820]">
-                          Contraseña actual
-                          <PasswordInput
-                            className="mt-2 !rounded-[1.1rem] !border-[#d4c6b7] !bg-[#fffdf9] !shadow-[0_12px_30px_rgba(59,43,34,0.06)]"
-                            value={passwordForm.currentPassword}
-                            onChange={handlePasswordFieldChange}
-                            show={showCurrentPassword}
-                            onToggle={() => setShowCurrentPassword((value) => !value)}
-                            name="currentPassword"
-                            placeholder="Escribe tu contraseña actual"
-                          />
-                          <FieldError message={passwordErrors.currentPassword} />
-                        </label>
-
-                        <div className="grid gap-4 md:grid-cols-2">
-                          <label className="text-sm font-semibold text-[#352820]">
-                            Nueva contraseña
-                            <PasswordInput
-                              className="mt-2 !rounded-[1.1rem] !border-[#d4c6b7] !bg-[#fffdf9] !shadow-[0_12px_30px_rgba(59,43,34,0.06)]"
-                              value={passwordForm.newPassword}
-                              onChange={handlePasswordFieldChange}
-                              show={showNewPassword}
-                              onToggle={() => setShowNewPassword((value) => !value)}
-                              name="newPassword"
-                              placeholder="Entre 8 y 64 caracteres"
-                            />
-                            <FieldError message={passwordErrors.newPassword} />
-                          </label>
-
-                          <label className="text-sm font-semibold text-[#352820]">
-                            Confirmar nueva contraseña
-                            <PasswordInput
-                              className="mt-2 !rounded-[1.1rem] !border-[#d4c6b7] !bg-[#fffdf9] !shadow-[0_12px_30px_rgba(59,43,34,0.06)]"
-                              value={passwordForm.confirmPassword}
-                              onChange={handlePasswordFieldChange}
-                              show={showConfirmPassword}
-                              onToggle={() => setShowConfirmPassword((value) => !value)}
-                              name="confirmPassword"
-                              placeholder="Repite la nueva contraseña"
-                            />
-                            <FieldError message={passwordErrors.confirmPassword} />
-                          </label>
-                        </div>
-                      </div>
-
-                      <StatusMessage message={passwordResult} />
-
-                      <div className="mt-5">
-                        <button
-                          type="button"
-                          onClick={handleChangePassword}
-                          className="cursor-pointer rounded-full bg-[#c97b57] px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#b86a47] disabled:cursor-not-allowed disabled:opacity-60"
-                          disabled={changingPassword}
-                        >
-                          {changingPassword ? "Actualizando..." : "Actualizar contraseña"}
-                        </button>
-                      </div>
-                    </section>
                   </form>
 
-                  <div className="space-y-5">
-                    <section className="rounded-[1.35rem] border border-[#d8b8ac] bg-[linear-gradient(180deg,rgba(255,247,244,0.98),rgba(249,235,231,0.94))] p-5 shadow-[0_16px_45px_rgba(57,42,31,0.08)]">
+                  <div className="grid gap-5 lg:grid-cols-2">
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        handleChangePassword();
+                      }}
+                    >
+                      <section className={`${sectionClassName} h-full`}>
+                        <div className="flex flex-col gap-1">
+                          <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[#8d7a6d]">
+                            Contraseña
+                          </p>
+                          <h2 className="text-lg font-semibold text-[#271d17]">
+                            Cambiar contraseña
+                          </h2>
+                        </div>
+
+                        <div className="mt-5 grid gap-4">
+                          <label className="text-sm font-semibold text-[#352820]">
+                            Contraseña actual
+                            <PasswordInput
+                              className={passwordInputClassName}
+                              value={passwordForm.currentPassword}
+                              onChange={handlePasswordFieldChange}
+                              show={showCurrentPassword}
+                              onToggle={() => setShowCurrentPassword((value) => !value)}
+                              name="currentPassword"
+                              placeholder="Escribe tu contraseña actual"
+                            />
+                            <FieldError message={passwordErrors.currentPassword} />
+                          </label>
+
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <label className="text-sm font-semibold text-[#352820]">
+                              Nueva contraseña
+                              <PasswordInput
+                                className={passwordInputClassName}
+                                value={passwordForm.newPassword}
+                                onChange={handlePasswordFieldChange}
+                                show={showNewPassword}
+                                onToggle={() => setShowNewPassword((value) => !value)}
+                                name="newPassword"
+                                placeholder="Entre 8 y 64 caracteres"
+                              />
+                              <FieldError message={passwordErrors.newPassword} />
+                            </label>
+
+                            <label className="text-sm font-semibold text-[#352820]">
+                              Confirmar nueva contraseña
+                              <PasswordInput
+                                className={passwordInputClassName}
+                                value={passwordForm.confirmPassword}
+                                onChange={handlePasswordFieldChange}
+                                show={showConfirmPassword}
+                                onToggle={() => setShowConfirmPassword((value) => !value)}
+                                name="confirmPassword"
+                                placeholder="Repite la nueva contraseña"
+                              />
+                              <FieldError message={passwordErrors.confirmPassword} />
+                            </label>
+                          </div>
+                        </div>
+
+                        <StatusMessage message={passwordResult} />
+
+                        <div className="mt-5">
+                          <button
+                            type="submit"
+                            className="cursor-pointer rounded-full bg-[#c97b57] px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#b86a47] disabled:cursor-not-allowed disabled:opacity-60"
+                            disabled={changingPassword}
+                          >
+                            {changingPassword ? "Actualizando..." : "Actualizar contraseña"}
+                          </button>
+                        </div>
+                      </section>
+                    </form>
+
+                    <section className="flex h-full flex-col rounded-[1.35rem] border border-[#d8b8ac] bg-[linear-gradient(180deg,rgba(255,247,244,0.98),rgba(249,235,231,0.94))] p-5 shadow-[0_16px_45px_rgba(57,42,31,0.08)]">
                       <div className="flex flex-col gap-1">
                         <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[#a06b5d]">
                           Zona sensible
@@ -596,7 +610,7 @@ export const EditarPerfil = {
                       <button
                         type="button"
                         onClick={() => setConfirmModal({ isOpen: true, action: "delete" })}
-                        className="mt-5 w-full cursor-pointer rounded-full bg-[#b84e3c] px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#a54232] disabled:cursor-not-allowed disabled:opacity-60"
+                        className="mt-auto w-full cursor-pointer rounded-full bg-[#b84e3c] px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#a54232] disabled:cursor-not-allowed disabled:opacity-60"
                         disabled={savingProfile}
                       >
                         Eliminar cuenta

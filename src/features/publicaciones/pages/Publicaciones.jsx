@@ -394,6 +394,31 @@ const PublicacionesPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const renderPaginationBar = (position) => (
+    <ReactPaginate
+      previousLabel="Anterior"
+      nextLabel="Siguiente"
+      breakLabel="..."
+      pageCount={totalPages}
+      marginPagesDisplayed={1}
+      pageRangeDisplayed={3}
+      onPageChange={handlePageClick}
+      forcePage={page - 1}
+      containerClassName="flex flex-wrap justify-center gap-3 py-2"
+      pageClassName="cursor-pointer"
+      pageLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
+      previousClassName="cursor-pointer"
+      previousLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
+      nextClassName="cursor-pointer"
+      nextLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
+      activeLinkClassName="!border-[#241914] !bg-[#241914] !text-white"
+      disabledClassName="pointer-events-none opacity-40"
+      breakLinkClassName="block rounded-full px-2 py-2 text-sm text-[#816959]"
+      renderOnZeroPageCount={null}
+      key={position}
+    />
+  );
+
   return (
     <div className="bg-[#f6efe4] pb-[calc(6.5rem+env(safe-area-inset-bottom))] text-[#241914] lg:pb-0">
       <Seo
@@ -468,6 +493,8 @@ const PublicacionesPage = () => {
             </div>
 
             <div className="space-y-6">
+              {!isFiltering && !loadingMore && totalPages > 1 && renderPaginationBar("top")}
+
               <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {loading ? (
                   <div className="col-span-full">
@@ -493,29 +520,7 @@ const PublicacionesPage = () => {
                 )}
               </div>
 
-              {!isFiltering && !loadingMore && totalPages > 1 && (
-                <ReactPaginate
-                  previousLabel="Anterior"
-                  nextLabel="Siguiente"
-                  breakLabel="..."
-                  pageCount={totalPages}
-                  marginPagesDisplayed={1}
-                  pageRangeDisplayed={3}
-                  onPageChange={handlePageClick}
-                  forcePage={page - 1}
-                  containerClassName="flex flex-wrap justify-center gap-3 py-2"
-                  pageClassName="cursor-pointer"
-                  pageLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-                  previousClassName="cursor-pointer"
-                  previousLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-                  nextClassName="cursor-pointer"
-                  nextLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-                  activeLinkClassName="!border-[#241914] !bg-[#241914] !text-white"
-                  disabledClassName="pointer-events-none opacity-40"
-                  breakLinkClassName="block rounded-full px-2 py-2 text-sm text-[#816959]"
-                  renderOnZeroPageCount={null}
-                />
-              )}
+              {!isFiltering && !loadingMore && totalPages > 1 && renderPaginationBar("bottom")}
 
               {!loading && loadingMore && !isFiltering && (
                 <div className="rounded-[0.85rem] border border-[#2f241d]/10 bg-white/72 px-4 py-3 text-center text-sm text-[#5f4c41] shadow-sm">
