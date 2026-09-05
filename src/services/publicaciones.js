@@ -1,7 +1,10 @@
 import axiosInstance from "./api";
 import { buildServiceSuccess, mapServiceError } from "./serviceUtils";
+import { ESTADOS_RESUELTOS } from "../utils/estadosPublicacion";
 
 const PUBLICACIONES_CACHE_TTL_MS = 30_000;
+const MAPA_FETCH_SIZE = 50;
+const publicacionesActivasPorTipoCache = new Map();
 const publicacionesListCache = new Map();
 const publicacionesListPending = new Map();
 const publicacionDetailCache = new Map();
@@ -303,6 +306,58 @@ export const publicacionesService = {
       return data;
     } catch (error) {
       return mapServiceError(error, "Error de conexión al servidor");
+    }
+  },
+
+  // Trae TODAS las publicaciones activas (no resueltas) de un tipo, paginando el
+  // backend internamente. Usado por el mapa de casos, que necesita el conjunto
+  // completo (no solo una página) para plotear todos los pines a la vez.
+  getPublicacionesActivasPorTipo: async (tipo) => {
+    if (publicacionesActivasPorTipoCache.has(tipo)) {
+      return publicacionesActivasPorTipoCache.get(tipo);
+    }
+
+    const promise = (async () => {
+      const primera = await publicacionesService.getPublicaciones({
+        page: 1,
+        limit: MAPA_FETCH_SIZE,
+        tipo,
+      });
+      const publicaciones = primera?.publicaciones || [];
+      const totalPages = primera?.totalPages || 1;
+
+      const requests = [];
+      for (let page = 2; page <= totalPages; page += 1) {
+        requests.push(publicacionesService.getPublicaciones({ page, limit: MAPA_FETCH_SIZE, tipo }));
+      }
+
+      const resto = totalPages > 1 ? await Promise.all(requests) : [];
+      const todas = [...publicaciones, ...resto.flatMap((r) => r?.publicaciones || [])];
+
+      return todas.filter((publicacion) => !ESTADOS_RESUELTOS.includes(publicacion.estado));
+    })();
+
+    publicacionesActivasPorTipoCache.set(tipo, promise);
+    return promise;
+  },
+
+  getUbicacionExacta: async (id) => {
+    try {
+      const { data } = await axiosInstance.get(`/publicaciones/${id}/ubicacion-exacta`);
+      return data;
+    } catch (error) {
+      return mapServiceError(error, "No se pudo obtener la ubicación exacta");
+    }
+  },
+
+  establecerUbicacionManual: async (id, { lat, lng }) => {
+    try {
+      const { data } = await axiosInstance.patch(`/publicaciones/${id}/ubicacion`, { lat, lng });
+      publicacionesActivasPorTipoCache.clear();
+      clearPublicacionesListCache();
+      return data;
+    } catch (error) {
+      return mapServiceError(error, "No se pudo actualizar la ubicación");
     }
   },
 };

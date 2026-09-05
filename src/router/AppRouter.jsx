@@ -17,10 +17,10 @@ const Publicaciones = lazy(() => import("../features/publicaciones/pages/Publica
 const PublicacionesExitosas = lazy(() =>
   import("../features/publicaciones/pages/PublicacionesExitosas"),
 );
+const MapaPublicaciones = lazy(() => import("../features/publicaciones/pages/MapaPublicaciones"));
 const Comunidad = lazy(() => import("../pages/Comunidad"));
 const Contact = lazy(() => import("../pages/Contact"));
 const TerminosCondiciones = lazy(() => import("../pages/TerminosCondiciones"));
-const QuienesSomos = lazy(() => import("../pages/QuienesSomos"));
 const Perdi = lazy(() => import("../pages/consejos/Perdi"));
 const Encontre = lazy(() => import("../pages/consejos/Encontre"));
 const Adoptar = lazy(() => import("../pages/consejos/Adoptar"));
@@ -52,6 +52,7 @@ const AppRouter = () => {
           path="/casos-resueltos"
           element={wrap(PublicacionesExitosas, { user })}
         />
+        <Route path="/mapa" element={wrap(MapaPublicaciones)} />
         <Route path="/consejos-perdi" element={wrap(Perdi, { user })} />
         <Route path="/consejos-encontre" element={wrap(Encontre, { user })} />
         <Route path="/consejos-adopcion" element={wrap(Adoptar, { user })} />
@@ -61,7 +62,7 @@ const AppRouter = () => {
           path="/terminos-y-condiciones"
           element={wrap(TerminosCondiciones)}
         />
-        <Route path="/quienes-somos" element={wrap(QuienesSomos)} />
+        <Route path="/quienes-somos" element={<Navigate to="/contacto" replace />} />
 
         <Route
           path="/login"

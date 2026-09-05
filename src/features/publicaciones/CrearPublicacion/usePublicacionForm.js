@@ -24,6 +24,8 @@ const initialFormState = {
   castrado: false,
   whatsapp: "",
   imgs: [],
+  lat: null,
+  lng: null,
 };
 
 /**
@@ -33,6 +35,8 @@ export const usePublicacionForm = (editData) => {
   const [razasPorEspecie, setRazasPorEspecie] = useState({});
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState({});
+  const [capturandoUbicacion, setCapturandoUbicacion] = useState(false);
+  const [errorUbicacion, setErrorUbicacion] = useState("");
 
   useEffect(() => {
     publicacionesService.getRazas().then((res) => {
@@ -83,6 +87,8 @@ export const usePublicacionForm = (editData) => {
       whatsapp: editData.whatsapp || "",
       imgs:
         editData.imgs?.length > 0 ? editData.imgs : editData.img ? [editData.img] : [],
+      lat: null,
+      lng: null,
     });
   }, [editData]);
 
@@ -119,6 +125,8 @@ export const usePublicacionForm = (editData) => {
         afinidadanimales: "",
         energia: "",
         castrado: false,
+        lat: null,
+        lng: null,
       }));
 
       [
@@ -130,6 +138,19 @@ export const usePublicacionForm = (editData) => {
         "energia",
         "castrado",
       ].forEach(clearFieldError);
+      return;
+    }
+
+    if (name === "lugar") {
+      // Si el usuario edita la dirección a mano después de usar el GPS, esa edición
+      // expresa la intención de corregir/reemplazar el punto capturado — se descarta
+      // para que no quede un pin GPS desactualizado "ganándole" a la dirección nueva.
+      setForm((prev) => ({
+        ...prev,
+        lugar: value,
+        ...(prev.lat != null ? { lat: null, lng: null } : {}),
+      }));
+      clearFieldError(name);
       return;
     }
 
@@ -154,6 +175,32 @@ export const usePublicacionForm = (editData) => {
 
   const setFormImgs = (urls) => setForm((prev) => ({ ...prev, imgs: urls }));
 
+  const capturarUbicacionGPS = () => {
+    if (!navigator.geolocation) {
+      setErrorUbicacion("Tu navegador no admite geolocalización");
+      return;
+    }
+
+    setCapturandoUbicacion(true);
+    setErrorUbicacion("");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm((prev) => ({
+          ...prev,
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        }));
+        setCapturandoUbicacion(false);
+      },
+      () => {
+        setErrorUbicacion("No pudimos obtener tu ubicación. Podés cargar la dirección a mano.");
+        setCapturandoUbicacion(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
+
   return {
     form,
     errors,
@@ -162,5 +209,8 @@ export const usePublicacionForm = (editData) => {
     resetForm,
     setFormImgs,
     razasPorEspecie,
+    capturarUbicacionGPS,
+    capturandoUbicacion,
+    errorUbicacion,
   };
 };

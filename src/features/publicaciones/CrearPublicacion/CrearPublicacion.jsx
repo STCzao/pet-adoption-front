@@ -38,8 +38,18 @@ export const CrearPublicacion = {
     const [submitting, setSubmitting] = useState(false);
     const [editData, setEditData] = useState(null);
 
-    const { form, errors, setErrors, handleChange, resetForm, setFormImgs, razasPorEspecie } =
-      usePublicacionForm(editData);
+    const {
+      form,
+      errors,
+      setErrors,
+      handleChange,
+      resetForm,
+      setFormImgs,
+      razasPorEspecie,
+      capturarUbicacionGPS,
+      capturandoUbicacion,
+      errorUbicacion,
+    } = usePublicacionForm(editData);
 
     const { handleAddImage, handleRemoveImage, handleMoveImage, uploading } = useImagesUpload(
       form.imgs,
@@ -129,6 +139,11 @@ export const CrearPublicacion = {
           datosParaEnviar.localidad = form.localidad;
           datosParaEnviar.lugar = form.lugar;
           datosParaEnviar.fecha = form.fecha;
+
+          if (form.lat != null && form.lng != null) {
+            datosParaEnviar.lat = form.lat;
+            datosParaEnviar.lng = form.lng;
+          }
         }
 
         const response =
@@ -261,6 +276,9 @@ export const CrearPublicacion = {
                         handleChange={handleChange}
                         errors={errors}
                         submitting={submitting}
+                        onCapturarUbicacion={capturarUbicacionGPS}
+                        capturandoUbicacion={capturandoUbicacion}
+                        errorUbicacion={errorUbicacion}
                       />
                     </div>
                   </section>
@@ -299,8 +317,8 @@ export const CrearPublicacion = {
                   </h2>
 
                   <div className="mt-4 space-y-3 text-sm leading-relaxed text-[#6d5a4f]">
-                    <p>Usá fotos claras donde se vea solo el animal, evitando flyers o imágenes con texto, ya que dificultan reconocer su apariencia en la base de datos.</p>
-                    <p>Describí manchas, collar, heridas o cualquier detalle o rasgo que ayude a reconocerlo.</p>
+                    <p>Usá fotos claras del animal solo (sin texto ni flyers).</p>
+                    <p>Describí rasgos específicos: manchas, collar, heridas.</p>
                   </div>
                 </section>
 

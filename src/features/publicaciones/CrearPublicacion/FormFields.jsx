@@ -133,6 +133,9 @@ export const MultiImageField = ({
       <label className={fieldLabel}>
         Imagenes * ({imgs.length} / {MAX})
       </label>
+      <p className="mt-1 text-[0.75rem] leading-relaxed text-[#816959]">
+        Incluir fotos claras aumenta las chances de reencuentro.
+      </p>
 
       {imgs.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-2">

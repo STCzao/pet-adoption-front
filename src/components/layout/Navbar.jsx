@@ -18,6 +18,7 @@ const loadAdminColaboradoresModule = () =>
 const loadAdminReclamosModule = () => import("../../features/publicaciones/AdminReclamos");
 const loadCrearComunidadModule = () => import("../../features/comunidad/CrearComunidad");
 const loadVerComunidadModule = () => import("../../features/comunidad/VerComunidad");
+const loadAdminUbicacionesModule = () => import("../../features/publicaciones/AdminUbicaciones");
 
 const CrearPublicacionModal = React.lazy(() =>
   loadCrearPublicacionModule().then((module) => ({
@@ -64,6 +65,11 @@ const VerComunidadModal = React.lazy(() =>
     default: module.VerComunidad.Component,
   })),
 );
+const AdminUbicacionesModal = React.lazy(() =>
+  loadAdminUbicacionesModule().then((module) => ({
+    default: module.AdminUbicaciones.Component,
+  })),
+);
 
 const NAV_LINKS = [
   { name: "Inicio", path: "/" },
@@ -91,6 +97,7 @@ const NAV_LINKS = [
       { name: "Qué hacer", path: "/consejos-adopcion" },
     ],
   },
+  { name: "Mapa", path: "/mapa" },
   { name: "Resueltos", path: "/casos-resueltos" },
   { name: "Comunidad", path: "/casos-ayuda" },
 ];
@@ -243,6 +250,7 @@ const NavbarContent = () => {
     AdminReclamos: false,
     CrearComunidad: false,
     VerComunidad: false,
+    AdminUbicaciones: false,
   });
 
   const isAdmin = !!(user && user.rol === "ADMIN_ROLE");
@@ -343,6 +351,11 @@ const NavbarContent = () => {
   };
 
   const handleProfileAction = async (action) => {
+    if (action === "create-post") {
+      handleCreatePost();
+      return;
+    }
+
     if (action === "logout") {
       setConfirmModal({ isOpen: true, item: { tipo: "sesion" } });
       closeMenus();
@@ -391,8 +404,26 @@ const NavbarContent = () => {
       return;
     }
 
+    if (action === "admin-ubicaciones") {
+      await openLazyModal(loadAdminUbicacionesModule, "AdminUbicaciones");
+      closeMenus();
+      return;
+    }
+
     if (action === "admin-reclamos") {
       await openLazyModal(loadAdminReclamosModule, "AdminReclamos");
+      closeMenus();
+      return;
+    }
+
+    if (action === "report-error") {
+      window.open(
+        `https://wa.me/5493815703940?text=${encodeURIComponent(
+          "Hola, quiero reportar un error de datos en una publicación de Perdidos y Adopciones.",
+        )}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
       closeMenus();
     }
   };
@@ -435,12 +466,15 @@ const NavbarContent = () => {
 
   const profileMenuItems = login
       ? [
+          { key: "create-post", label: "Publicar caso", tone: "primary" },
           { key: "profile", label: "Mi perfil" },
           { key: "posts", label: "Mis publicaciones" },
+          { key: "mapa", label: "Mapa de casos", path: "/mapa" },
           ...(isModerador
             ? [
-                { key: "admin-comunidad-create", label: "Crear caso para ayuda" },
-                { key: "admin-comunidad-list", label: "Todos los casos para ayuda" },
+                { key: "admin-comunidad-create", label: "Crear publicación en Comunidad" },
+                { key: "admin-comunidad-list", label: "Ver Comunidad" },
+                { key: "admin-ubicaciones", label: "Ubicaciones pendientes" },
               ]
             : []),
           ...(isAdmin
@@ -452,12 +486,16 @@ const NavbarContent = () => {
               ]
             : []),
         { key: "contact", label: "Colaborar", path: "/contacto" },
+        { key: "report-error", label: "Reportar un error de datos" },
         { key: "logout", label: "Cerrar sesión", tone: "danger" },
       ]
     : [
+        { key: "create-post", label: "Publicar caso", tone: "primary" },
         { key: "login", label: "Iniciar sesión", path: "/login" },
         { key: "register", label: "Registrarse", path: "/register" },
+        { key: "mapa", label: "Mapa de casos", path: "/mapa" },
         { key: "contact", label: "Colaborar", path: "/contacto" },
+        { key: "report-error", label: "Reportar un error de datos" },
       ];
 
   const isMobileBottomLinkActive = (item) => {
@@ -486,14 +524,18 @@ const NavbarContent = () => {
         <button
           key={item.key}
           onClick={() => handleProfileAction(item.key)}
-          className={`w-full cursor-pointer text-left text-sm font-medium transition-colors duration-300 ${
-            isMobile
-              ? item.tone === "danger"
-                ? "rounded-[0.95rem] border border-[#b84e3c]/18 bg-[#f8d8d0] px-3 py-2 text-[#a44939] hover:bg-[#f3c8be]"
-                : "rounded-[0.95rem] border border-[#2f241d]/8 bg-white/64 px-3 py-2 text-[#241914] hover:bg-[color:var(--shell-surface-alt)]"
-              : item.tone === "danger"
-                ? "rounded-[0.95rem] px-3 py-2 text-[#a44939] hover:bg-[#f8d8d0]"
-                : "rounded-[0.95rem] px-3 py-2 text-[#241914] hover:bg-[color:var(--shell-surface-alt)] hover:text-[#241914]"
+          className={`w-full cursor-pointer text-left text-sm transition-colors duration-300 ${
+            item.tone === "primary"
+              ? "rounded-[0.95rem] bg-[color:var(--shell-bark)] px-3 py-2 font-bold text-white hover:bg-[#45362d]"
+              : `font-medium ${
+                  isMobile
+                    ? item.tone === "danger"
+                      ? "rounded-[0.95rem] border border-[#b84e3c]/18 bg-[#f8d8d0] px-3 py-2 text-[#a44939] hover:bg-[#f3c8be]"
+                      : "rounded-[0.95rem] border border-[#2f241d]/8 bg-white/64 px-3 py-2 text-[#241914] hover:bg-[color:var(--shell-surface-alt)]"
+                    : item.tone === "danger"
+                      ? "rounded-[0.95rem] px-3 py-2 text-[#a44939] hover:bg-[#f8d8d0]"
+                      : "rounded-[0.95rem] px-3 py-2 text-[#241914] hover:bg-[color:var(--shell-surface-alt)] hover:text-[#241914]"
+                }`
           }`}
         >
           {item.label}
@@ -594,14 +636,7 @@ const NavbarContent = () => {
           </div>
 
           <div className="hidden shrink-0 items-center gap-2 lg:flex">
-            <button
-              onClick={handleCreatePost}
-              className="cursor-pointer rounded-[0.95rem] bg-[color:var(--shell-bark)] px-5 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(47,36,29,0.16)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-[#45362d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--shell-bark)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-            >
-              Publicar caso
-            </button>
-
-<div className="relative">
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setIsDesktopProfileMenuOpen((value) => !value)}
@@ -746,6 +781,7 @@ const NavbarContent = () => {
         {mountedModals.AdminReclamos && <AdminReclamosModal />}
         {mountedModals.CrearComunidad && <CrearComunidadModal />}
         {mountedModals.VerComunidad && <VerComunidadModal />}
+        {mountedModals.AdminUbicaciones && <AdminUbicacionesModal />}
       </React.Suspense>
 
       <ConfirmModal
