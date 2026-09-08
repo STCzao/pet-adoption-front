@@ -85,7 +85,21 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-[color:var(--shell-line)]/70 pt-6 text-xs text-[#7b685c] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Perdidos y Adopciones.</p>
+          <p className="flex flex-wrap items-center gap-1.5">
+            <span>© {new Date().getFullYear()} Perdidos y Adopciones. Todos los derechos reservados.</span>
+            <span aria-hidden="true">·</span>
+            <span>
+              Powered by{" "}
+              <a
+                href="https://www.instagram.com/gentechman.soft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#7b685c] underline decoration-dotted underline-offset-2 transition-colors hover:text-[color:var(--shell-ink)]"
+              >
+                GentechMan
+              </a>
+            </span>
+          </p>
           <p>Base comunitaria para visibilizar, reunir y dar hogar.</p>
         </div>
       </div>
