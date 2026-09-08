@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import ReactPaginate from "react-paginate";
 import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import Seo from "../../../components/seo/Seo";
@@ -79,7 +78,7 @@ const PublicacionesExitosasPage = () => {
   const [publicaciones, setPublicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [hashProcessed, setHashProcessed] = useState(false);
 
   useEffect(() => {
@@ -161,8 +160,8 @@ const PublicacionesExitosasPage = () => {
       return;
     }
 
-    const targetPage = Math.floor(cardIndex / ITEMS_PER_PAGE) + 1;
-    setPage(targetPage);
+    const neededCount = cardIndex + 1;
+    setVisibleCount((prev) => (neededCount > prev ? neededCount : prev));
     setHashProcessed(true);
   }, [location.hash, loading, hashProcessed, publicaciones]);
 
@@ -178,45 +177,18 @@ const PublicacionesExitosasPage = () => {
     }, 200);
 
     return () => clearTimeout(timeoutId);
-  }, [page, loading, location.hash]);
+  }, [visibleCount, loading, location.hash]);
 
-  const totalPages = Math.ceil(publicaciones.length / ITEMS_PER_PAGE);
-  const startIndex = (page - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
   const displayPublicaciones = useMemo(
-    () => publicaciones.slice(startIndex, endIndex),
-    [endIndex, publicaciones, startIndex],
+    () => publicaciones.slice(0, visibleCount),
+    [publicaciones, visibleCount],
   );
 
-  const handlePageClick = (event) => {
-    setPage(event.selected + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const hayMasParaMostrar = visibleCount < publicaciones.length;
+
+  const handleVerMas = () => {
+    setVisibleCount((prev) => Math.min(prev + ITEMS_PER_PAGE, publicaciones.length));
   };
-
-  const renderPaginationBar = (position) => (
-    <ReactPaginate
-      previousLabel="Anterior"
-      nextLabel="Siguiente"
-      breakLabel="..."
-      pageCount={totalPages}
-      marginPagesDisplayed={1}
-      pageRangeDisplayed={3}
-      onPageChange={handlePageClick}
-      forcePage={page - 1}
-      containerClassName="flex flex-wrap justify-center gap-3 py-2"
-      pageClassName="cursor-pointer"
-      pageLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-      previousClassName="cursor-pointer"
-      previousLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-      nextClassName="cursor-pointer"
-      nextLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-      activeLinkClassName="!border-[#241914] !bg-[#241914] !text-white"
-      disabledClassName="pointer-events-none opacity-40"
-      breakLinkClassName="block rounded-full px-2 py-2 text-sm text-[#816959]"
-      renderOnZeroPageCount={null}
-      key={position}
-    />
-  );
 
   return (
     <div className="bg-[#f6efe4] text-[#241914]">
@@ -263,20 +235,11 @@ const PublicacionesExitosasPage = () => {
                 <p className="mt-3 text-[0.95rem] font-medium leading-relaxed text-[#5f4c41]">
                   {loading
                     ? "Cargando casos resueltos..."
-                    : loadingMore
-                      ? `Mostrando ${Math.min(
-                          publicaciones.length,
-                          ITEMS_PER_PAGE,
-                        )} casos mientras completamos el archivo histórico.`
-                      : `Explora los ${publicaciones.length} casos resueltos.`}
+                    : `Mostrando ${displayPublicaciones.length} de ${publicaciones.length} casos resueltos.`}
                 </p>
               </div>
             </div>
           </motion.section>
-
-          {!loading && !loadingMore && totalPages > 1 && (
-            <div className="mt-8">{renderPaginationBar("top")}</div>
-          )}
 
           <div className="mt-8 grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {loading ? (
@@ -311,13 +274,19 @@ const PublicacionesExitosasPage = () => {
             )}
           </div>
 
-          {!loading && !loadingMore && totalPages > 1 && (
-            <div className="mt-8">{renderPaginationBar("bottom")}</div>
-          )}
-
-          {!loading && loadingMore && (
-            <div className="mt-8 rounded-[0.85rem] border border-[#2f241d]/10 bg-white/72 px-4 py-3 text-center text-sm text-[#5f4c41] shadow-sm">
-              Cargando más casos para completar el archivo histórico.
+          {!loading && (hayMasParaMostrar || loadingMore) && (
+            <div className="mt-8 flex justify-center py-2">
+              {hayMasParaMostrar ? (
+                <button
+                  type="button"
+                  onClick={handleVerMas}
+                  className="cursor-pointer rounded-full border border-[#2f241d]/15 bg-white px-6 py-2.5 text-sm font-semibold text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
+                >
+                  Ver más
+                </button>
+              ) : (
+                <LoadingState label="Cargando el resto del archivo histórico..." compact />
+              )}
             </div>
           )}
         </div>

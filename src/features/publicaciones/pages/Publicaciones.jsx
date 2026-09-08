@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import ReactPaginate from "react-paginate";
 import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import CardFiltro from "../../../components/forms/CardFiltro";
@@ -64,6 +63,7 @@ const PublicacionesPage = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hashProcessed, setHashProcessed] = useState(false);
   const [razasPorEspecie, setRazasPorEspecie] = useState({});
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   const filtros = useMemo(() => ({
     raza: searchParams.get("raza") || "",
@@ -76,8 +76,6 @@ const PublicacionesPage = () => {
     localidad: searchParams.get("localidad") || "",
     lugar: searchParams.get("lugar") || "",
   }), [searchParams]);
-
-  const page = parseInt(searchParams.get("pagina") || "1", 10);
 
   const setFiltros = useCallback((updater) => {
     setSearchParams((prev) => {
@@ -94,7 +92,6 @@ const PublicacionesPage = () => {
       };
       const newFiltros = typeof updater === "function" ? updater(current) : updater;
       const params = new URLSearchParams(prev);
-      params.delete("pagina");
       Object.entries(newFiltros).forEach(([key, value]) => {
         if (value) params.set(key, value);
         else params.delete(key);
@@ -301,19 +298,27 @@ const PublicacionesPage = () => {
     compareFechas(a.fecha || "", b.fecha || ""),
   );
 
-  const totalPages = Math.ceil(publicacionesOrdenadas.length / ITEMS_PER_PAGE);
-  const startIndex = (page - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-
   const displayPublicaciones = isFiltering
     ? publicacionesOrdenadas
-    : publicacionesOrdenadas.slice(startIndex, endIndex);
+    : publicacionesOrdenadas.slice(0, visibleCount);
+
+  const hayMasParaMostrar = !isFiltering && visibleCount < publicacionesOrdenadas.length;
 
   useEffect(() => {
     if (isFiltering) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [isFiltering]);
+
+  // Vuelve a mostrar el primer lote cuando cambian los filtros o el tipo, para no
+  // arrastrar un scroll infinito ya avanzado a un resultado distinto.
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [tipo, filtros]);
+
+  const handleVerMas = () => {
+    setVisibleCount((prev) => Math.min(prev + ITEMS_PER_PAGE, publicacionesOrdenadas.length));
+  };
 
   useEffect(() => {
     const id = location.hash.slice(1);
@@ -328,30 +333,22 @@ const PublicacionesPage = () => {
       );
 
       if (cardIndex !== -1) {
-        const targetPage = Math.floor(cardIndex / ITEMS_PER_PAGE) + 1;
+        const neededCount = cardIndex + 1;
+        setVisibleCount((prev) => (neededCount > prev ? neededCount : prev));
 
-        if (targetPage !== page) {
-          setSearchParams((prev) => {
-            const params = new URLSearchParams(prev);
-            if (targetPage === 1) params.delete("pagina");
-            else params.set("pagina", String(targetPage));
-            return params;
-          }, { replace: true });
-        } else {
-          setTimeout(() => {
-            const element = document.getElementById(id);
-            if (element) {
-              element.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-          }, 200);
-        }
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 200);
 
         setHashProcessed(true);
       } else {
         checkIfInSuccessfulPublications(id);
       }
     }
-  }, [location.hash, loading, loadingMore, hashProcessed, publicacionesOrdenadas, page, tipo]);
+  }, [location.hash, loading, loadingMore, hashProcessed, publicacionesOrdenadas, tipo]);
 
   const checkIfInSuccessfulPublications = async (publicacionId) => {
     try {
@@ -381,43 +378,7 @@ const PublicacionesPage = () => {
         }
       }, 200);
     }
-  }, [page, loading, location.hash]);
-
-  const handlePageClick = (event) => {
-    const newPage = event.selected + 1;
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      if (newPage === 1) params.delete("pagina");
-      else params.set("pagina", String(newPage));
-      return params;
-    }, { replace: true });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const renderPaginationBar = (position) => (
-    <ReactPaginate
-      previousLabel="Anterior"
-      nextLabel="Siguiente"
-      breakLabel="..."
-      pageCount={totalPages}
-      marginPagesDisplayed={1}
-      pageRangeDisplayed={3}
-      onPageChange={handlePageClick}
-      forcePage={page - 1}
-      containerClassName="flex flex-wrap justify-center gap-3 py-2"
-      pageClassName="cursor-pointer"
-      pageLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-      previousClassName="cursor-pointer"
-      previousLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-      nextClassName="cursor-pointer"
-      nextLinkClassName="block rounded-[0.6rem] border border-[#2f241d]/10 bg-[#fffaf4] px-4 py-2 text-sm text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
-      activeLinkClassName="!border-[#241914] !bg-[#241914] !text-white"
-      disabledClassName="pointer-events-none opacity-40"
-      breakLinkClassName="block rounded-full px-2 py-2 text-sm text-[#816959]"
-      renderOnZeroPageCount={null}
-      key={position}
-    />
-  );
+  }, [visibleCount, loading, location.hash]);
 
   return (
     <div className="bg-[#f6efe4] pb-[calc(6.5rem+env(safe-area-inset-bottom))] text-[#241914] lg:pb-0">
@@ -468,14 +429,9 @@ const PublicacionesPage = () => {
                   <p className="mt-1.5 text-[0.86rem] font-medium leading-relaxed text-[#5f4c41]">
                     {loading
                       ? "Cargando publicaciones activas..."
-                      : loadingMore
-                        ? `Mostrando ${Math.min(
-                            publicacionesOrdenadas.length,
-                            ITEMS_PER_PAGE,
-                          )} resultados mientras terminamos de cargar el archivo.`
-                        : isFiltering
-                          ? `Mostrando ${publicacionesOrdenadas.length} coincidencias según tus filtros.`
-                          : `Mostrando ${publicacionesOrdenadas.length} publicaciones.`}
+                      : isFiltering
+                        ? `Mostrando ${publicacionesOrdenadas.length} coincidencias según tus filtros.`
+                        : `Mostrando ${displayPublicaciones.length} de ${publicacionesOrdenadas.length} publicaciones.`}
                   </p>
                 </div>
               </div>
@@ -493,8 +449,6 @@ const PublicacionesPage = () => {
             </div>
 
             <div className="space-y-6">
-              {!isFiltering && !loadingMore && totalPages > 1 && renderPaginationBar("top")}
-
               <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {loading ? (
                   <div className="col-span-full">
@@ -520,11 +474,19 @@ const PublicacionesPage = () => {
                 )}
               </div>
 
-              {!isFiltering && !loadingMore && totalPages > 1 && renderPaginationBar("bottom")}
-
-              {!loading && loadingMore && !isFiltering && (
-                <div className="rounded-[0.85rem] border border-[#2f241d]/10 bg-white/72 px-4 py-3 text-center text-sm text-[#5f4c41] shadow-sm">
-                  Cargando más publicaciones para habilitar la paginación completa y los filtros avanzados.
+              {!loading && !isFiltering && (hayMasParaMostrar || loadingMore) && (
+                <div className="flex justify-center py-2">
+                  {hayMasParaMostrar ? (
+                    <button
+                      type="button"
+                      onClick={handleVerMas}
+                      className="cursor-pointer rounded-full border border-[#2f241d]/15 bg-white px-6 py-2.5 text-sm font-semibold text-[#241914] shadow-sm transition-colors duration-300 hover:bg-[#efe2d0]"
+                    >
+                      Ver más
+                    </button>
+                  ) : (
+                    <LoadingState label="Cargando más publicaciones..." compact />
+                  )}
                 </div>
               )}
             </div>
