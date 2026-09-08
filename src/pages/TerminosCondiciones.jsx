@@ -15,9 +15,35 @@ const sections = [
       "Quienes usan la plataforma se comprometen a compartir información veraz, actualizada y respetuosa. No está permitido publicar contenido engañoso, ofensivo, discriminatorio o que vulnere derechos de terceros.",
   },
   {
-    title: "Privacidad de datos",
+    title: "Contenido publicado y propiedad intelectual",
     content:
-      "Los datos ingresados se utilizan para facilitar el contacto entre personas usuarias y mejorar el funcionamiento del proyecto. Recomendamos publicar solo la información necesaria para resolver cada caso.",
+      "Al publicar fotos, descripciones u otro contenido en el sitio, declarás que sos el titular de esos derechos o que contás con autorización para usarlos, y le otorgás a Perdidos y Adopciones una licencia no exclusiva para mostrarlos dentro de la plataforma con el único fin de difundir cada caso. Sos responsable del contenido que publicás y de que no vulnere derechos de terceros.",
+  },
+  {
+    title: "Moderación y eliminación de contenido",
+    content:
+      "Perdidos y Adopciones se reserva el derecho de revisar, editar, rechazar o eliminar publicaciones que incumplan estos términos, contengan información falsa o resulten inapropiadas, sin necesidad de aviso previo. Esta tarea la realiza un equipo de administración y moderación, con acceso a los datos necesarios para verificar y gestionar cada caso.",
+  },
+  {
+    title: "Tratamiento de datos personales",
+    content:
+      "Esta plataforma solicita datos personales — nombre, número de contacto telefónico, correo electrónico y, según el caso, fotos y ubicación geográfica — que se incorporan a tu perfil y a tus publicaciones con el único fin de poder contactarte, informarte sobre animales perdidos, encontrados o en adopción, y llevar adelante todas las acciones vinculadas al objeto de este sitio. Si te registrás con Google, recibimos tu nombre, correo y foto de perfil desde tu cuenta. Si completás el formulario de colaboración, también recopilamos tu localidad, barrio y disponibilidad horaria, únicamente para coordinar con vos según la forma de ayuda que elijas. Al enviar una publicación o formulario, declarás y aceptás que:",
+    list: [
+      "Los datos personales ingresados son propios, reales y veraces, y los brindás de manera voluntaria y consciente, sin existir impedimentos legales o de capacidad para hacerlo.",
+      "Autorizás expresamente el tratamiento de dichos datos con la única finalidad de colaborar en la búsqueda, denuncia, difusión o adopción responsable de animales domésticos, conforme al objeto de esta página.",
+      "Tenés conocimiento de que los datos serán tratados de forma confidencial, no serán divulgados ni utilizados para fines distintos a los aquí indicados, y que su acceso se encuentra limitado al administrador del sitio, sin perjuicio de los riesgos propios de cualquier entorno digital.",
+      "Declarás conocer que podés solicitar en cualquier momento la actualización o eliminación de tus datos personales, de acuerdo con la normativa vigente en materia de protección de datos personales (Ley Nº 25.326).",
+    ],
+  },
+  {
+    title: "Geolocalización",
+    content:
+      "En publicaciones de animales perdidos o encontrados, la ubicación se puede cargar por GPS o por dirección escrita. La ubicación exacta que ingresás se guarda de forma confidencial y solo es accesible para el equipo de moderación del sitio; en el mapa público y en cada publicación se muestra una ubicación aproximada, desplazada aleatoriamente, para proteger tu privacidad.",
+  },
+  {
+    title: "Servicios de terceros",
+    content:
+      "Para operar el sitio utilizamos servicios de terceros que pueden procesar parte de tus datos: Google, para el inicio de sesión con tu cuenta; Cloudinary, para el almacenamiento de las imágenes que subís; y OpenStreetMap/Nominatim, para ubicar direcciones en el mapa cuando no compartís tu ubicación por GPS. Cada uno de estos servicios procesa los datos según sus propias políticas de privacidad.",
   },
   {
     title: "Responsabilidad",
@@ -63,6 +89,13 @@ export default function TerminosCondiciones() {
                 <p className="mt-3 text-sm leading-relaxed text-[color:var(--shell-muted)] sm:text-base">
                   {section.content}
                 </p>
+                {section.list && (
+                  <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-[color:var(--shell-muted)] sm:text-base">
+                    {section.list.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                )}
               </section>
             ))}
           </div>
