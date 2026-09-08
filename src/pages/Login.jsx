@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { authLogin } from "../services/auth";
 import { validateLoginForm } from "../utils/validators";
-import { resolvePostLoginRedirect } from "../utils/postLoginRedirect";
 import AuthLayout from "../components/layout/AuthLayout";
 import PasswordInput from "../components/forms/PasswordInput";
 import GoogleAuthSection from "../components/auth/GoogleAuthSection";
@@ -17,12 +16,12 @@ const LoginScreen = ({ guardarUsuario }) => {
   const [result, setResult] = useState("");
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
+  // No navegamos acá: el guard de /login en AppRouter reacciona al cambio de
+  // `login` y redirige (una sola vez) al lugar correcto. Ver PostLoginRedirect.
   const finishLogin = (usuario) => {
     guardarUsuario(usuario);
     localStorage.removeItem("lastRegisteredEmail");
-    navigate(resolvePostLoginRedirect(), { replace: true });
   };
 
   const handleSubmit = async (event) => {

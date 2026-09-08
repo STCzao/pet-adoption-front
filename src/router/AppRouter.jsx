@@ -1,7 +1,8 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { resolvePostLoginRedirect } from "../utils/postLoginRedirect";
 import LoadingState from "../components/ui/LoadingState";
 import PageTransition from "../components/ui/PageTransition";
 
@@ -26,6 +27,30 @@ const Encontre = lazy(() => import("../pages/consejos/Encontre"));
 const Adoptar = lazy(() => import("../pages/consejos/Adoptar"));
 
 const RouteFallback = () => <LoadingState fullScreen label="Cargando contenido..." />;
+
+// Único punto que decide a dónde ir después de un login/registro exitoso. Antes
+// convivían dos mecanismos (un navigate() explícito en Login/Register y este mismo
+// guard con <Navigate to="/">) que competían entre sí: cuando `login` pasaba a
+// true durante la transición animada de página, el guard reactivo ganaba la
+// carrera y mandaba a home aunque el navigate() explícito ya hubiera acertado el
+// destino. Con un solo mecanismo (este) no hay dos navegaciones disputándose el resultado.
+//
+// El guard de `hasRedirected` evita un segundo problema: resolvePostLoginRedirect()
+// borra la clave de localStorage al leerla (no es idempotente), y React.StrictMode
+// invoca los efectos dos veces en desarrollo — sin el guard, la segunda invocación
+// no encontraba nada guardado y terminaba redirigiendo a "/" por defecto.
+const PostLoginRedirect = () => {
+  const navigate = useNavigate();
+  const hasRedirected = useRef(false);
+
+  useEffect(() => {
+    if (hasRedirected.current) return;
+    hasRedirected.current = true;
+    navigate(resolvePostLoginRedirect(), { replace: true });
+  }, [navigate]);
+
+  return null;
+};
 
 const wrap = (Component, props = {}) => (
   <PageTransition>
@@ -67,21 +92,13 @@ const AppRouter = () => {
         <Route
           path="/login"
           element={
-            login ? (
-              <Navigate to="/" />
-            ) : (
-              <Login guardarUsuario={guardarUsuario} />
-            )
+            login ? <PostLoginRedirect /> : <Login guardarUsuario={guardarUsuario} />
           }
         />
         <Route
           path="/register"
           element={
-            login ? (
-              <Navigate to="/" />
-            ) : (
-              <Register guardarUsuario={guardarUsuario} />
-            )
+            login ? <PostLoginRedirect /> : <Register guardarUsuario={guardarUsuario} />
           }
         />
         <Route

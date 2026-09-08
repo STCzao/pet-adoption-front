@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
             'vendor-motion': ['framer-motion'],
-            'vendor-ui': ['react-paginate', 'react-lazy-load-image-component'],
+            'vendor-ui': ['react-lazy-load-image-component'],
             'vendor-pdf': ['jspdf', 'html2canvas'],
           },
         },

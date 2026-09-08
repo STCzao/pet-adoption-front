@@ -545,7 +545,7 @@ const NavbarContent = () => {
 
   return (
     <>
-      <nav ref={navRef} className="fixed left-0 top-0 z-50 w-full px-2.5 pt-2 sm:px-5 sm:pt-2.5 lg:pl-8 lg:pr-4">
+      <nav ref={navRef} className="fixed left-0 top-0 z-[1050] w-full px-2.5 pt-2 sm:px-5 sm:pt-2.5 lg:pl-8 lg:pr-4">
         <div
           className={`mx-auto flex max-w-[1680px] items-center justify-between gap-2 rounded-[1.15rem] border px-2.5 py-2 transition-[background-color,border-color,box-shadow] duration-500 sm:gap-4 sm:rounded-[1.35rem] sm:px-4 sm:py-2.5 ${
             isSolidNavbar
@@ -738,7 +738,7 @@ const NavbarContent = () => {
         </div>
       </nav>
 
-      <div className="fixed bottom-0 left-0 right-0 z-[1000] min-h-[4.85rem] border-t border-[color:var(--shell-line)] bg-[#fffaf4] px-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-16px_45px_rgba(31,20,14,0.14)] lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-[1050] min-h-[4.85rem] border-t border-[color:var(--shell-line)] bg-[#fffaf4] px-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-16px_45px_rgba(31,20,14,0.14)] lg:hidden">
         <div className="mx-auto grid max-w-[560px] grid-cols-5 gap-1.5">
           {MOBILE_PRIMARY_LINKS.map((item) => {
             const isActive = isMobileBottomLinkActive(item);

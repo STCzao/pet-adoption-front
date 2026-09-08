@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { crearUsuario } from "../services/auth";
 import { validateRegisterForm } from "../utils/validators";
-import { resolvePostLoginRedirect } from "../utils/postLoginRedirect";
 import AuthLayout from "../components/layout/AuthLayout";
 import PasswordInput from "../components/forms/PasswordInput";
 import GoogleAuthSection from "../components/auth/GoogleAuthSection";
@@ -23,10 +22,11 @@ export default function RegisterScreen({ guardarUsuario }) {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // No navegamos acá: el guard de /register en AppRouter reacciona al cambio de
+  // `login` y redirige (una sola vez) al lugar correcto. Ver PostLoginRedirect.
   const handleGoogleSuccess = (usuario) => {
     guardarUsuario(usuario);
     localStorage.removeItem("lastRegisteredEmail");
-    navigate(resolvePostLoginRedirect(), { replace: true });
   };
 
   const handleChange = (event) => {
