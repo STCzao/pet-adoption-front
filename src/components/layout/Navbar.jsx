@@ -667,7 +667,7 @@ const NavbarContent = () => {
               </button>
 
               <div
-                className={`absolute right-0 top-full z-20 mt-2 flex min-w-[260px] flex-col gap-2 rounded-[1.15rem] border border-[#2f241d]/10 bg-[rgba(255,250,244,0.96)] p-3 shadow-[0_20px_55px_rgba(20,15,13,0.14)] backdrop-blur-xl transition-[opacity,transform] duration-200 ${
+                className={`absolute right-0 top-full z-20 mt-2 flex max-h-[75vh] min-w-[260px] flex-col gap-2 overflow-y-auto overscroll-contain rounded-[1.15rem] border border-[#2f241d]/10 bg-[rgba(255,250,244,0.96)] p-3 shadow-[0_20px_55px_rgba(20,15,13,0.14)] backdrop-blur-xl transition-[opacity,transform] duration-200 ${
                   isDesktopProfileMenuOpen
                     ? "visible translate-y-0 opacity-100"
                     : "invisible translate-y-2 opacity-0"
@@ -722,7 +722,7 @@ const NavbarContent = () => {
           }`}
         >
           <div className="mx-auto max-w-[1680px]">
-            <div className="ml-auto max-w-[320px] rounded-[1.15rem] border border-[#2f241d]/10 bg-[rgba(255,250,244,0.96)] p-3 shadow-[0_20px_55px_rgba(20,15,13,0.14)] backdrop-blur-xl">
+            <div className="ml-auto flex max-h-[calc(100vh-9rem)] max-w-[320px] flex-col overflow-y-auto overscroll-contain rounded-[1.15rem] border border-[#2f241d]/10 bg-[rgba(255,250,244,0.96)] p-3 shadow-[0_20px_55px_rgba(20,15,13,0.14)] backdrop-blur-xl">
               <div className="rounded-[1rem] border border-[#2f241d]/8 bg-white/64 px-3 py-3">
                 <p className="text-sm font-semibold text-[#241914]">
                   {login ? greeting : "Mi cuenta"}
